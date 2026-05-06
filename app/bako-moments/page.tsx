@@ -17,12 +17,17 @@ export default async function BakoMomentsPage() {
   const session = await auth();
   const isOwner = (session?.user as { isOwner?: boolean })?.isOwner;
 
-  const moments = await prisma.bakoMoment.findMany({
-    orderBy: { createdAt: "desc" },
-    include: {
-      relatedPost: { select: { title: true, slug: true } },
-    },
-  });
+  let moments: Awaited<ReturnType<typeof prisma.bakoMoment.findMany>> = [];
+  try {
+    moments = await prisma.bakoMoment.findMany({
+      orderBy: { createdAt: "desc" },
+      include: {
+        relatedPost: { select: { title: true, slug: true } },
+      },
+    });
+  } catch {
+    // Table not yet migrated
+  }
 
   return (
     <div className="container mx-auto px-4 py-10">

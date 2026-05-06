@@ -27,11 +27,16 @@ async function getTimeCapsuleData() {
     select: { slug: true, title: true, createdAt: true },
   });
 
-  // Latest bako moment
-  const latestMoment = await prisma.bakoMoment.findFirst({
-    orderBy: { createdAt: "desc" },
-    select: { id: true, title: true, momentType: true },
-  });
+  // Latest bako moment — wrapped in try/catch in case table doesn't exist yet
+  let latestMoment = null;
+  try {
+    latestMoment = await prisma.bakoMoment.findFirst({
+      orderBy: { createdAt: "desc" },
+      select: { id: true, title: true, momentType: true },
+    });
+  } catch {
+    // Table not yet migrated — silently skip
+  }
 
   return { lastYearPost, randomPost, latestMoment };
 }
