@@ -1,21 +1,12 @@
 "use client";
 
-import { useState, useTransition, useRef } from "react";
+import { useState, useTransition, useRef, useEffect } from "react";
 import { toggleReaction } from "@/lib/actions";
-import { REACTION_LABELS, type ReactionType } from "@/lib/utils";
+import type { ReactionType } from "@/lib/utils";
 import toast from "react-hot-toast";
 
-interface ReactionCounts {
-  same: number;
-  feltThat: number;
-  hugs: number;
-}
-
-interface UserReactions {
-  same: boolean;
-  feltThat: boolean;
-  hugs: boolean;
-}
+interface ReactionCounts { same: number; feltThat: number; hugs: number }
+interface UserReactions { same: boolean; feltThat: boolean; hugs: boolean }
 
 interface ReactionsProps {
   postId: string;
@@ -24,24 +15,22 @@ interface ReactionsProps {
   isLoggedIn: boolean;
 }
 
-// Map old reaction keys to basketball labels
-const BASKETBALL_LABELS: Record<ReactionType, { emoji: string; label: string; color: string }> = {
-  same: { emoji: "🏀", label: "Swish", color: "hoop-orange" },
-  feltThat: { emoji: "🔥", label: "Heat Check", color: "red-500" },
-  hugs: { emoji: "🧱", label: "Brick", color: "slate-400" },
+const BASKETBALL_LABELS: Record<ReactionType, { emoji: string; label: string }> = {
+  same:     { emoji: "🏀", label: "Swish" },
+  feltThat: { emoji: "🔥", label: "Heat Check" },
+  hugs:     { emoji: "🧱", label: "Brick" },
 };
 
-export function Reactions({
-  postId,
-  counts,
-  userReactions,
-  isLoggedIn,
-}: ReactionsProps) {
+export function Reactions({ postId, counts, userReactions, isLoggedIn }: ReactionsProps) {
   const [localCounts, setLocalCounts] = useState(counts);
   const [localUserReactions, setLocalUserReactions] = useState(userReactions);
   const [isPending, startTransition] = useTransition();
   const [shakingHoop, setShakingHoop] = useState(false);
-  const hoopRef = useRef<HTMLSpanElement>(null);
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    setIsMobile(window.matchMedia("(max-width: 768px)").matches);
+  }, []);
 
   const handleReaction = (type: ReactionType) => {
     if (!isLoggedIn) {
@@ -49,10 +38,16 @@ export function Reactions({
       return;
     }
 
-    // Shake hoop on Swish
+    // Swish-specific effects
     if (type === "same") {
-      setShakingHoop(true);
-      setTimeout(() => setShakingHoop(false), 600);
+      if (isMobile) {
+        // Haptic on mobile (only after user interaction — this IS a click)
+        if ("vibrate" in navigator) navigator.vibrate(150);
+      } else {
+        // Hoop shake on desktop
+        setShakingHoop(true);
+        setTimeout(() => setShakingHoop(false), 600);
+      }
     }
 
     const wasActive = localUserReactions[type];
@@ -77,17 +72,15 @@ export function Reactions({
 
   return (
     <div className="my-6">
-      {/* Section header with hoop */}
       <div className="flex items-center gap-3 mb-4">
         <span className="font-heading text-sm text-slate-400 uppercase tracking-widest">
           Vibe Check
         </span>
         <div className="flex-1 h-px bg-slate-800" />
-        {/* Hoop that shakes on Swish */}
+        {/* Hoop icon — shakes on desktop Swish */}
         <span
-          ref={hoopRef}
-          className={`text-xl select-none transition-transform ${shakingHoop ? "hoop-shake" : ""}`}
-          title="Hoop"
+          className={`text-xl select-none ${shakingHoop ? "hoop-shake" : ""}`}
+          aria-hidden="true"
         >
           🏀
         </span>
@@ -108,14 +101,13 @@ export function Reactions({
                 flex items-center gap-2 px-4 py-2 rounded-sm border font-body text-xs font-semibold uppercase tracking-wider
                 transition-all duration-200 hover:scale-105 active:scale-95
                 disabled:opacity-50 disabled:cursor-not-allowed
-                ${
-                  isActive
-                    ? type === "same"
-                      ? "border-hoop-orange bg-hoop-orange/20 text-hoop-orange shadow-orange-sm"
-                      : type === "feltThat"
-                      ? "border-red-500 bg-red-500/20 text-red-400"
-                      : "border-slate-500 bg-slate-700 text-slate-300"
-                    : "border-slate-700 bg-slate-900 text-slate-500 hover:border-hoop-orange/50 hover:text-slate-300"
+                ${isActive
+                  ? type === "same"
+                    ? "border-hoop-orange bg-hoop-orange/20 text-hoop-orange shadow-orange-sm"
+                    : type === "feltThat"
+                    ? "border-red-500 bg-red-500/20 text-red-400"
+                    : "border-slate-500 bg-slate-700 text-slate-300"
+                  : "border-slate-700 bg-slate-900 text-slate-500 hover:border-hoop-orange/50 hover:text-slate-300"
                 }
               `}
               aria-label={`React with ${label}`}
@@ -124,12 +116,7 @@ export function Reactions({
               <span className="text-base">{emoji}</span>
               <span>{label}</span>
               {count > 0 && (
-                <span
-                  className={`
-                    text-xs font-bold px-1.5 py-0.5 rounded-sm
-                    ${isActive ? "bg-white/10" : "bg-slate-800"}
-                  `}
-                >
+                <span className={`text-xs font-bold px-1.5 py-0.5 rounded-sm ${isActive ? "bg-white/10" : "bg-slate-800"}`}>
                   {count}
                 </span>
               )}

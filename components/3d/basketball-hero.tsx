@@ -3,7 +3,6 @@
 import dynamic from "next/dynamic";
 import { Suspense } from "react";
 
-// Dynamically import to avoid SSR issues with Three.js
 const Basketball3D = dynamic(
   () => import("./basketball").then((m) => m.Basketball3D),
   { ssr: false }
@@ -11,26 +10,30 @@ const Basketball3D = dynamic(
 
 function BallFallback() {
   return (
-    <div className="w-[280px] h-[280px] flex items-center justify-center">
-      <div className="text-8xl animate-bounce-ball select-none">🏀</div>
+    <div className="w-[260px] h-[260px] flex items-center justify-center">
+      <span className="text-8xl bounce-ball select-none">🏀</span>
     </div>
   );
 }
 
-export function BasketballHero() {
+interface BasketballHeroProps {
+  isShaking?: boolean;
+}
+
+export function BasketballHero({ isShaking = false }: BasketballHeroProps) {
   return (
     <div className="relative flex items-center justify-center">
-      {/* Glow ring behind ball */}
+      {/* Glow ring */}
       <div
-        className="absolute rounded-full opacity-20 blur-3xl"
+        className="absolute rounded-full blur-3xl pointer-events-none"
         style={{
-          width: 320,
-          height: 320,
-          background: "radial-gradient(circle, #F97316 0%, transparent 70%)",
+          width: 300,
+          height: 300,
+          background: "radial-gradient(circle, rgba(255,87,34,0.25) 0%, transparent 70%)",
         }}
       />
       <Suspense fallback={<BallFallback />}>
-        <Basketball3D size={280} />
+        <Basketball3D size={260} isShaking={isShaking} />
       </Suspense>
     </div>
   );
