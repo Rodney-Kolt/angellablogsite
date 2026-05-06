@@ -1,0 +1,143 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import url('https://fonts.googleapis.com/css2?family=Fredoka+One&family=Quicksand:wght@300;400;500;600;700&family=Caveat:wght@400;500;600;700&display=swap');
+
+@layer base {
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 340 20% 20%;
+    --card: 0 0% 100%;
+    --card-foreground: 340 20% 20%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 340 20% 20%;
+    --primary: 330 80% 65%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 270 60% 90%;
+    --secondary-foreground: 270 40% 40%;
+    --muted: 330 30% 95%;
+    --muted-foreground: 330 20% 55%;
+    --accent: 270 60% 90%;
+    --accent-foreground: 270 40% 40%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 330 40% 90%;
+    --input: 330 40% 90%;
+    --ring: 330 80% 65%;
+    --radius: 1rem;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground font-body;
+    background: linear-gradient(135deg, #fce4ec 0%, #f3e5f5 25%, #e8eaf6 50%, #e3f2fd 75%, #fce4ec 100%);
+    background-attachment: fixed;
+    min-height: 100vh;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-heading;
+  }
+}
+
+/* Custom font variables */
+:root {
+  --font-fredoka: 'Fredoka One', cursive;
+  --font-quicksand: 'Quicksand', sans-serif;
+  --font-caveat: 'Caveat', cursive;
+}
+
+/* TipTap prose styles */
+.prose {
+  @apply font-body text-pink-900;
+}
+
+.prose h2 {
+  @apply font-heading text-2xl text-pink-800 mt-6 mb-3;
+}
+
+.prose h3 {
+  @apply font-heading text-xl text-pink-700 mt-5 mb-2;
+}
+
+.prose p {
+  @apply mb-4 leading-relaxed;
+}
+
+.prose ul {
+  @apply list-disc list-inside mb-4 space-y-1;
+}
+
+.prose ol {
+  @apply list-decimal list-inside mb-4 space-y-1;
+}
+
+.prose blockquote {
+  @apply border-l-4 border-pink-300 pl-4 italic text-pink-600 my-4;
+}
+
+.prose a {
+  @apply text-pink-500 underline hover:text-pink-700;
+}
+
+.prose hr {
+  @apply border-pink-200 my-6;
+}
+
+.prose img {
+  @apply rounded-2xl shadow-girly my-4 max-w-full;
+}
+
+/* TipTap placeholder */
+.tiptap p.is-editor-empty:first-child::before {
+  content: attr(data-placeholder);
+  @apply text-pink-300 pointer-events-none float-left h-0;
+}
+
+/* Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: #fce4ec;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #f9a8d4;
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #f472b6;
+}
+
+/* Loading spinner */
+@keyframes spin-girly {
+  to { transform: rotate(360deg); }
+}
+
+.spinner-girly {
+  width: 40px;
+  height: 40px;
+  border: 3px solid #fce7f3;
+  border-top-color: #f9a8d4;
+  border-radius: 50%;
+  animation: spin-girly 0.8s linear infinite;
+}
+
+/* Floating animation */
+.float {
+  animation: float 3s ease-in-out infinite;
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-8px); }
+}
