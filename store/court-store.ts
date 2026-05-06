@@ -1,6 +1,7 @@
 import { create } from "zustand";
 
 export type CourtView = "court" | "post" | "bako" | "music" | "archive";
+export type LightMode = "day" | "night";
 
 interface PostData {
   id: string;
@@ -13,15 +14,12 @@ interface PostData {
 }
 
 interface CourtState {
-  // Current view / modal
   activeView: CourtView;
   setActiveView: (v: CourtView) => void;
 
-  // Selected post for modal
   selectedPost: PostData | null;
   setSelectedPost: (p: PostData | null) => void;
 
-  // Scoreboard data
   scoreboardData: {
     totalPosts: number;
     totalReactions: number;
@@ -30,17 +28,23 @@ interface CourtState {
   };
   setScoreboardData: (d: CourtState["scoreboardData"]) => void;
 
-  // Hoop shake trigger
   hoopShaking: boolean;
   triggerHoopShake: () => void;
 
-  // Sound mute
   muted: boolean;
   toggleMute: () => void;
 
-  // Camera reset trigger
   resetCamera: boolean;
   triggerCameraReset: () => void;
+
+  // ── Light mode ──────────────────────────────────────────────────────────────
+  lightMode: LightMode;
+  toggleLightMode: () => void;
+}
+
+function getInitialLightMode(): LightMode {
+  if (typeof window === "undefined") return "day";
+  return (localStorage.getItem("courtLightMode") as LightMode) ?? "day";
 }
 
 export const useCourtStore = create<CourtState>((set) => ({
@@ -72,4 +76,14 @@ export const useCourtStore = create<CourtState>((set) => ({
     set({ resetCamera: true });
     setTimeout(() => set({ resetCamera: false }), 100);
   },
+
+  lightMode: "day", // always start day; hydrated in CourtWrapper
+  toggleLightMode: () =>
+    set((s) => {
+      const next: LightMode = s.lightMode === "day" ? "night" : "day";
+      if (typeof window !== "undefined") {
+        localStorage.setItem("courtLightMode", next);
+      }
+      return { lightMode: next };
+    }),
 }));

@@ -1,8 +1,8 @@
 "use client";
 
-import { useRef, useEffect, Suspense } from "react";
+import { useRef, useEffect, Suspense, useState } from "react";
 import { Canvas, useThree, useFrame } from "@react-three/fiber";
-import { OrbitControls, Stars, Environment } from "@react-three/drei";
+import { OrbitControls, Stars } from "@react-three/drei";
 import * as THREE from "three";
 import { CourtFloor } from "./court-floor";
 import { BasketballHoop } from "./basketball-hoop";
@@ -26,7 +26,6 @@ interface PostData {
 // ─── Auto-rotate camera when idle ────────────────────────────────────────────
 function AutoRotateCamera({ isMobile }: { isMobile: boolean }) {
   const { camera } = useThree();
-  const idleTimer = useRef(0);
   const lastInteraction = useRef(Date.now());
   const resetCamera = useCourtStore((s) => s.resetCamera);
 
@@ -40,12 +39,10 @@ function AutoRotateCamera({ isMobile }: { isMobile: boolean }) {
     };
   }, []);
 
-  useFrame((_, delta) => {
-    if (isMobile) return; // No auto-rotate on mobile
-
+  useFrame(() => {
+    if (isMobile) return;
     const idle = (Date.now() - lastInteraction.current) / 1000;
     if (idle > 5) {
-      // Cinematic orbit
       const angle = Date.now() * 0.0001;
       camera.position.x = Math.sin(angle) * 14;
       camera.position.z = Math.cos(angle) * 14;
@@ -53,7 +50,6 @@ function AutoRotateCamera({ isMobile }: { isMobile: boolean }) {
     }
   });
 
-  // Camera reset
   useEffect(() => {
     if (resetCamera) {
       camera.position.set(0, 6, 12);
@@ -64,46 +60,63 @@ function AutoRotateCamera({ isMobile }: { isMobile: boolean }) {
   return null;
 }
 
-// ─── Stands (low-poly bleachers) ─────────────────────────────────────────────
+// ─── Stands — color reacts to light mode ─────────────────────────────────────
 function Stands() {
+  const lightMode = useCourtStore((s) => s.lightMode);
+  const isNight = lightMode === "night";
+
+  const standColor = isNight ? "#0d0d1a" : "#c8c8d8";
+  const ceilColor  = isNight ? "#050510" : "#d0d8e8";
+
   return (
     <group>
-      {/* Left stand */}
       <mesh position={[-14, 1, 0]} rotation={[0, Math.PI / 2, 0]}>
         <boxGeometry args={[12, 4, 2]} />
-        <meshStandardMaterial color="#1a1a2e" roughness={0.9} />
+        <meshStandardMaterial color={standColor} roughness={0.9} />
       </mesh>
-      {/* Right stand */}
       <mesh position={[14, 1, 0]} rotation={[0, -Math.PI / 2, 0]}>
         <boxGeometry args={[12, 4, 2]} />
-        <meshStandardMaterial color="#1a1a2e" roughness={0.9} />
+        <meshStandardMaterial color={standColor} roughness={0.9} />
       </mesh>
-      {/* Back stand */}
       <mesh position={[0, 1, -8]}>
         <boxGeometry args={[28, 4, 2]} />
-        <meshStandardMaterial color="#1a1a2e" roughness={0.9} />
+        <meshStandardMaterial color={standColor} roughness={0.9} />
       </mesh>
-      {/* Ceiling/roof suggestion */}
+      {/* Ceiling */}
       <mesh position={[0, 12, 0]}>
         <boxGeometry args={[32, 0.5, 20]} />
-        <meshStandardMaterial color="#0d0d1a" roughness={1} />
+        <meshStandardMaterial color={ceilColor} roughness={1} />
       </mesh>
+
+      {/* Night: tiny phone-light dots on stands */}
+      {isNight && (
+        <>
+          {Array.from({ length: 20 }).map((_, i) => (
+            <mesh
+              key={i}
+              position={[
+                (Math.random() - 0.5) * 24,
+                0.5 + Math.random() * 3,
+                i % 2 === 0 ? -7.5 : (i % 4 === 1 ? -13.5 : 13.5),
+              ]}
+            >
+              <sphereGeometry args={[0.04, 4, 4]} />
+              <meshStandardMaterial
+                color="#ffffff"
+                emissive={new THREE.Color("#88aaff")}
+                emissiveIntensity={1.5}
+              />
+            </mesh>
+          ))}
+        </>
+      )}
     </group>
   );
 }
 
-// ─── Trophy case (Bako Moments) ───────────────────────────────────────────────
+// ─── Trophy case ──────────────────────────────────────────────────────────────
 function TrophyCase() {
-  const router_ref = useRef<{ push: (url: string) => void } | null>(null);
   const [hovered, setHovered] = useState(false);
-
-  // Dynamic import to avoid SSR issues
-  useEffect(() => {
-    import("next/navigation").then(({ useRouter }) => {
-      // Can't use hooks here, use window.location instead
-    });
-  }, []);
-
   return (
     <group
       position={[-8, 0, 4]}
@@ -111,23 +124,14 @@ function TrophyCase() {
       onPointerEnter={() => setHovered(true)}
       onPointerLeave={() => setHovered(false)}
     >
-      {/* Case base */}
       <mesh position={[0, 0.3, 0]}>
         <boxGeometry args={[1.5, 0.6, 0.8]} />
         <meshStandardMaterial color="#2d1b00" roughness={0.6} metalness={0.3} />
       </mesh>
-      {/* Glass case */}
       <mesh position={[0, 1.1, 0]}>
         <boxGeometry args={[1.4, 1.4, 0.7]} />
-        <meshStandardMaterial
-          color="#88ccff"
-          transparent
-          opacity={0.15}
-          roughness={0}
-          metalness={0.1}
-        />
+        <meshStandardMaterial color="#88ccff" transparent opacity={0.15} roughness={0} metalness={0.1} />
       </mesh>
-      {/* Trophy */}
       <mesh position={[0, 1.2, 0]}>
         <cylinderGeometry args={[0.1, 0.2, 0.6, 8]} />
         <meshStandardMaterial color="#FFD700" metalness={0.8} roughness={0.2} />
@@ -136,21 +140,14 @@ function TrophyCase() {
         <sphereGeometry args={[0.15, 8, 8]} />
         <meshStandardMaterial color="#FFD700" metalness={0.8} roughness={0.2} />
       </mesh>
-      {/* Glow */}
-      <pointLight
-        color="#FFD700"
-        intensity={hovered ? 1.5 : 0.5}
-        distance={3}
-        position={[0, 1.5, 0]}
-      />
+      <pointLight color="#FFD700" intensity={hovered ? 1.5 : 0.5} distance={3} position={[0, 1.5, 0]} />
     </group>
   );
 }
 
-// ─── Jukebox (Music) ──────────────────────────────────────────────────────────
+// ─── Jukebox ──────────────────────────────────────────────────────────────────
 function Jukebox() {
   const [hovered, setHovered] = useState(false);
-
   return (
     <group
       position={[8, 0, 4]}
@@ -158,12 +155,10 @@ function Jukebox() {
       onPointerEnter={() => setHovered(true)}
       onPointerLeave={() => setHovered(false)}
     >
-      {/* Body */}
       <mesh position={[0, 0.8, 0]}>
         <boxGeometry args={[1.2, 1.6, 0.7]} />
         <meshStandardMaterial color="#1a0a2e" roughness={0.5} metalness={0.3} />
       </mesh>
-      {/* Screen */}
       <mesh position={[0, 1.1, 0.36]}>
         <boxGeometry args={[0.8, 0.6, 0.02]} />
         <meshStandardMaterial
@@ -172,45 +167,53 @@ function Jukebox() {
           emissiveIntensity={hovered ? 1.5 : 0.8}
         />
       </mesh>
-      {/* Speaker grille */}
       <mesh position={[0, 0.4, 0.36]}>
         <boxGeometry args={[0.9, 0.5, 0.02]} />
         <meshStandardMaterial color="#333" wireframe />
       </mesh>
-      {/* Glow */}
-      <pointLight
-        color="#1DB954"
-        intensity={hovered ? 2 : 0.8}
-        distance={4}
-        position={[0, 1, 0.5]}
-      />
+      <pointLight color="#1DB954" intensity={hovered ? 2 : 0.8} distance={4} position={[0, 1, 0.5]} />
     </group>
   );
 }
 
-// Need useState import
-import { useState } from "react";
+// ─── Scene background synced to light mode ────────────────────────────────────
+function SceneBackground() {
+  const { scene } = useThree();
+  const lightMode = useCourtStore((s) => s.lightMode);
 
-// ─── Main scene ───────────────────────────────────────────────────────────────
+  useEffect(() => {
+    scene.background = new THREE.Color(lightMode === "day" ? "#87CEEB" : "#050a0e");
+  }, [lightMode, scene]);
+
+  return null;
+}
+
+// ─── Main scene inner ─────────────────────────────────────────────────────────
 interface CourtSceneInnerProps {
   posts: PostData[];
   caps: DeviceCapabilities;
 }
 
 function CourtSceneInner({ posts, caps }: CourtSceneInnerProps) {
+  const lightMode = useCourtStore((s) => s.lightMode);
+  const isNight = lightMode === "night";
+
   return (
     <>
+      <SceneBackground />
       <AutoRotateCamera isMobile={caps.isMobile} />
       <ArenaLighting isMobile={caps.isMobile} />
 
-      {/* Stars skybox */}
-      <Stars
-        radius={50}
-        depth={30}
-        count={caps.isMobile ? 500 : 2000}
-        factor={3}
-        fade
-      />
+      {/* Stars: always in night, hidden in day */}
+      {isNight && (
+        <Stars
+          radius={50}
+          depth={30}
+          count={caps.isMobile ? 500 : 2000}
+          factor={3}
+          fade
+        />
+      )}
 
       {/* Court */}
       <CourtFloor isMobile={caps.isMobile} />
@@ -223,15 +226,11 @@ function CourtSceneInner({ posts, caps }: CourtSceneInnerProps) {
       {/* Scoreboard */}
       <Scoreboard />
 
-      {/* Neon nav signs */}
+      {/* Neon nav signs — always visible, brighter in night */}
       {!caps.isMobile && <NeonSigns />}
 
       {/* Floating post cards */}
-      <PostCards3D
-        posts={posts}
-        isMobile={caps.isMobile}
-        maxCards={caps.maxCards}
-      />
+      <PostCards3D posts={posts} isMobile={caps.isMobile} maxCards={caps.maxCards} />
 
       {/* Trophy case + Jukebox */}
       <TrophyCase />
@@ -246,7 +245,7 @@ function CourtSceneInner({ posts, caps }: CourtSceneInnerProps) {
         maxDistance={20}
         maxPolarAngle={Math.PI / 2.1}
         touches={{
-          ONE: caps.isMobile ? THREE.TOUCH.ROTATE : THREE.TOUCH.ROTATE,
+          ONE: THREE.TOUCH.ROTATE,
           TWO: THREE.TOUCH.DOLLY_PAN,
         }}
       />
@@ -254,7 +253,7 @@ function CourtSceneInner({ posts, caps }: CourtSceneInnerProps) {
   );
 }
 
-// ─── Exported component ───────────────────────────────────────────────────────
+// ─── Exported Canvas ──────────────────────────────────────────────────────────
 interface CourtSceneProps {
   posts: PostData[];
   caps: DeviceCapabilities;
@@ -272,7 +271,6 @@ export function CourtScene({ posts, caps }: CourtSceneProps) {
       dpr={[1, caps.pixelRatio]}
       frameloop={caps.frameloop}
       shadows={!caps.isMobile}
-      style={{ background: "#050a0e" }}
     >
       <Suspense fallback={null}>
         <CourtSceneInner posts={posts} caps={caps} />
