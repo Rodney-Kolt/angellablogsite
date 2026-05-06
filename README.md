@@ -2,7 +2,7 @@
 
 > a dreamy digital scrapbook — daily thoughts, tiny joys, and soft moments 🌸
 
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/yourusername/kiro-daily&env=AUTH_SECRET,DATABASE_URL,DIRECT_URL,AUTH_RESEND_KEY,BLOB_READ_WRITE_TOKEN&envDescription=Required%20environment%20variables&envLink=https://github.com/yourusername/kiro-daily%23environment-variables)
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/Rodney-Kolt/angellablogsite&env=AUTH_SECRET,DATABASE_URL,DIRECT_URL,AUTH_RESEND_KEY,BLOB_READ_WRITE_TOKEN&envDescription=Required%20environment%20variables&envLink=https://github.com/Rodney-Kolt/angellablogsite%23environment-variables)
 
 ---
 
