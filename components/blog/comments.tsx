@@ -63,12 +63,12 @@ export function Comments({
 
   const handleDelete = (commentId: string) => {
     startTransition(async () => {
-      const result = await deleteComment(commentId);
-      if (result?.error) {
-        toast.error("couldn't delete that note");
-      } else {
+      try {
+        await deleteComment(commentId);
         setComments((prev) => prev.filter((c) => c.id !== commentId));
         toast.success("note removed");
+      } catch {
+        toast.error("couldn't delete that note");
       }
     });
   };
