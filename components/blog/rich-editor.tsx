@@ -48,8 +48,8 @@ function ToolbarButton({
       disabled={disabled}
       title={title}
       className={cn(
-        "p-1.5 rounded-lg transition-all duration-150 hover:bg-pink-100",
-        isActive ? "bg-pink-200 text-pink-700" : "text-pink-500",
+        "p-1.5 rounded-sm transition-all duration-150 hover:bg-slate-700",
+        isActive ? "bg-slate-700 text-hoop-orange" : "text-slate-400",
         disabled && "opacity-40 cursor-not-allowed"
       )}
     >
@@ -75,7 +75,7 @@ export function RichEditor({ content, onChange, placeholder }: RichEditorProps) 
     editorProps: {
       attributes: {
         class:
-          "prose prose-pink max-w-none min-h-[300px] p-4 focus:outline-none font-body text-pink-900",
+          "prose prose-invert max-w-none min-h-[300px] p-4 focus:outline-none font-body text-slate-200",
       },
     },
   });
@@ -90,9 +90,9 @@ export function RichEditor({ content, onChange, placeholder }: RichEditorProps) 
   };
 
   return (
-    <div className="border-2 border-pink-200 rounded-2xl overflow-hidden bg-white/80 focus-within:border-pink-400 transition-colors">
+    <div className="border border-slate-700 rounded-sm overflow-hidden bg-slate-900 focus-within:border-hoop-orange transition-colors">
       {/* Toolbar */}
-      <div className="flex flex-wrap items-center gap-1 p-2 border-b border-pink-100 bg-pink-50/50">
+      <div className="flex flex-wrap items-center gap-1 p-2 border-b border-slate-700 bg-slate-800/50">
         <ToolbarButton
           onClick={() => editor.chain().focus().toggleBold().run()}
           isActive={editor.isActive("bold")}
@@ -108,7 +108,7 @@ export function RichEditor({ content, onChange, placeholder }: RichEditorProps) 
           <Italic className="w-4 h-4" />
         </ToolbarButton>
 
-        <div className="w-px h-5 bg-pink-200 mx-1" />
+        <div className="w-px h-5 bg-slate-700 mx-1" />
 
         <ToolbarButton
           onClick={() =>
@@ -129,7 +129,7 @@ export function RichEditor({ content, onChange, placeholder }: RichEditorProps) 
           <Heading3 className="w-4 h-4" />
         </ToolbarButton>
 
-        <div className="w-px h-5 bg-pink-200 mx-1" />
+        <div className="w-px h-5 bg-slate-700 mx-1" />
 
         <ToolbarButton
           onClick={() => editor.chain().focus().toggleBulletList().run()}
@@ -153,7 +153,7 @@ export function RichEditor({ content, onChange, placeholder }: RichEditorProps) 
           <Quote className="w-4 h-4" />
         </ToolbarButton>
 
-        <div className="w-px h-5 bg-pink-200 mx-1" />
+        <div className="w-px h-5 bg-slate-700 mx-1" />
 
         <ToolbarButton onClick={addLink} isActive={editor.isActive("link")} title="Add link">
           <LinkIcon className="w-4 h-4" />
@@ -165,7 +165,7 @@ export function RichEditor({ content, onChange, placeholder }: RichEditorProps) 
           <Minus className="w-4 h-4" />
         </ToolbarButton>
 
-        <div className="w-px h-5 bg-pink-200 mx-1" />
+        <div className="w-px h-5 bg-slate-700 mx-1" />
 
         <ToolbarButton
           onClick={() => editor.chain().focus().undo().run()}
@@ -188,3 +188,4 @@ export function RichEditor({ content, onChange, placeholder }: RichEditorProps) 
     </div>
   );
 }
+

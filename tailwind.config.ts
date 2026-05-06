@@ -50,47 +50,29 @@ const config: Config = {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
         },
-        // Girly pastel palette
-        blush: {
-          50: "#fff0f3",
-          100: "#ffe0e8",
-          200: "#ffc1d1",
-          300: "#ff93b0",
-          400: "#ff5585",
-          500: "#ff1f5e",
-          600: "#f0003d",
-          700: "#cc0033",
-          800: "#a8002e",
-          900: "#8c002b",
+        // Basketball court palette
+        court: {
+          black: "#111111",
+          dark: "#1a1a1a",
+          slate: "#1e293b",
+          gray: "#2d2d2d",
+          concrete: "#3a3a3a",
+          wood: "#D2A679",
         },
-        lavender: {
-          50: "#f5f3ff",
-          100: "#ede9fe",
-          200: "#ddd6fe",
-          300: "#c4b5fd",
-          400: "#a78bfa",
-          500: "#8b5cf6",
-          600: "#7c3aed",
-          700: "#6d28d9",
-          800: "#5b21b6",
-          900: "#4c1d95",
-        },
-        baby: {
-          50: "#eff6ff",
-          100: "#dbeafe",
-          200: "#bfdbfe",
-          300: "#93c5fd",
-          400: "#60a5fa",
-          500: "#3b82f6",
-        },
-        rose: {
-          pastel: "#ffd6e0",
+        hoop: {
+          orange: "#F97316",
+          "orange-bright": "#FF6B35",
+          neon: "#39FF14",
+          "neon-dim": "#22cc0d",
+          white: "#F8FAFC",
+          chalk: "#E2E8F0",
         },
       },
       fontFamily: {
-        heading: ["var(--font-fredoka)", "cursive"],
-        body: ["var(--font-quicksand)", "sans-serif"],
-        handwriting: ["var(--font-caveat)", "cursive"],
+        heading: ["var(--font-bebas)", "var(--font-poppins)", "sans-serif"],
+        subheading: ["var(--font-poppins)", "sans-serif"],
+        body: ["var(--font-inter)", "sans-serif"],
+        handwriting: ["var(--font-inter)", "sans-serif"],
       },
       borderRadius: {
         lg: "var(--radius)",
@@ -108,37 +90,79 @@ const config: Config = {
         },
         float: {
           "0%, 100%": { transform: "translateY(0px)" },
-          "50%": { transform: "translateY(-10px)" },
+          "50%": { transform: "translateY(-12px)" },
+        },
+        bounce: {
+          "0%, 100%": { transform: "translateY(0)", animationTimingFunction: "cubic-bezier(0.8,0,1,1)" },
+          "50%": { transform: "translateY(-20px)", animationTimingFunction: "cubic-bezier(0,0,0.2,1)" },
+        },
+        "neon-pulse": {
+          "0%, 100%": { boxShadow: "0 0 5px #39FF14, 0 0 10px #39FF14, 0 0 20px #39FF14" },
+          "50%": { boxShadow: "0 0 10px #39FF14, 0 0 25px #39FF14, 0 0 50px #39FF14" },
+        },
+        "orange-pulse": {
+          "0%, 100%": { boxShadow: "0 0 5px #F97316, 0 0 10px #F97316" },
+          "50%": { boxShadow: "0 0 15px #F97316, 0 0 30px #F97316, 0 0 45px #F97316" },
+        },
+        "hoop-shake": {
+          "0%, 100%": { transform: "rotate(0deg)" },
+          "15%": { transform: "rotate(-3deg)" },
+          "30%": { transform: "rotate(3deg)" },
+          "45%": { transform: "rotate(-2deg)" },
+          "60%": { transform: "rotate(2deg)" },
+          "75%": { transform: "rotate(-1deg)" },
+        },
+        "spin-ball": {
+          from: { transform: "rotate(0deg)" },
+          to: { transform: "rotate(360deg)" },
+        },
+        "slide-up": {
+          from: { opacity: "0", transform: "translateY(20px)" },
+          to: { opacity: "1", transform: "translateY(0)" },
         },
         shimmer: {
           "0%": { backgroundPosition: "-200% 0" },
           "100%": { backgroundPosition: "200% 0" },
-        },
-        wiggle: {
-          "0%, 100%": { transform: "rotate(-3deg)" },
-          "50%": { transform: "rotate(3deg)" },
         },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
         float: "float 3s ease-in-out infinite",
+        "bounce-ball": "bounce 0.8s infinite",
+        "neon-pulse": "neon-pulse 2s ease-in-out infinite",
+        "orange-pulse": "orange-pulse 2s ease-in-out infinite",
+        "hoop-shake": "hoop-shake 0.5s ease-in-out",
+        "spin-ball": "spin-ball 2s linear infinite",
+        "slide-up": "slide-up 0.4s ease-out",
         shimmer: "shimmer 2s linear infinite",
-        wiggle: "wiggle 1s ease-in-out infinite",
       },
       backgroundImage: {
-        "girly-gradient":
-          "linear-gradient(135deg, #fce4ec 0%, #f3e5f5 25%, #e8eaf6 50%, #e3f2fd 75%, #fce4ec 100%)",
-        "card-gradient":
-          "linear-gradient(135deg, rgba(255,255,255,0.9) 0%, rgba(255,240,245,0.9) 100%)",
+        "court-gradient": "linear-gradient(180deg, #111111 0%, #1a1a1a 50%, #111111 100%)",
+        "orange-gradient": "linear-gradient(135deg, #F97316 0%, #ea580c 100%)",
+        "neon-gradient": "linear-gradient(135deg, #39FF14 0%, #22cc0d 100%)",
+        "card-dark": "linear-gradient(135deg, #1e293b 0%, #0f172a 100%)",
+        "court-lines": `repeating-linear-gradient(
+          90deg,
+          transparent,
+          transparent 60px,
+          rgba(249,115,22,0.04) 60px,
+          rgba(249,115,22,0.04) 61px
+        ), repeating-linear-gradient(
+          0deg,
+          transparent,
+          transparent 60px,
+          rgba(249,115,22,0.04) 60px,
+          rgba(249,115,22,0.04) 61px
+        )`,
       },
       boxShadow: {
-        girly:
-          "0 4px 20px rgba(255, 182, 193, 0.3), 0 2px 8px rgba(216, 180, 254, 0.2)",
-        "girly-lg":
-          "0 8px 40px rgba(255, 182, 193, 0.4), 0 4px 16px rgba(216, 180, 254, 0.3)",
-        polaroid:
-          "0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -1px rgba(0,0,0,0.06), 4px 4px 0 rgba(255,182,193,0.3)",
+        neon: "0 0 10px #39FF14, 0 0 20px #39FF14, 0 0 40px rgba(57,255,20,0.3)",
+        "neon-sm": "0 0 5px #39FF14, 0 0 10px rgba(57,255,20,0.5)",
+        orange: "0 0 10px #F97316, 0 0 20px rgba(249,115,22,0.4)",
+        "orange-sm": "0 0 5px #F97316, 0 0 10px rgba(249,115,22,0.3)",
+        "card-hover": "0 8px 32px rgba(249,115,22,0.2), 0 0 0 1px rgba(249,115,22,0.3)",
+        court: "0 4px 20px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.05)",
       },
     },
   },

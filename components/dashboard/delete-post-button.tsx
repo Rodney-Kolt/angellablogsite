@@ -28,7 +28,7 @@ export function DeletePostButton({ postId, postTitle }: DeletePostButtonProps) {
     startTransition(async () => {
       try {
         await deletePost(postId);
-        toast.success("post deleted 🌸");
+        toast.success("post deleted");
         setOpen(false);
       } catch (err: unknown) {
         if (err instanceof Error && err.message !== "NEXT_REDIRECT") {
@@ -42,37 +42,27 @@ export function DeletePostButton({ postId, postTitle }: DeletePostButtonProps) {
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
         <Button variant="ghost" size="icon" title="Delete post">
-          <Trash2 className="w-4 h-4 text-red-400" />
+          <Trash2 className="w-4 h-4 text-red-500" />
         </Button>
       </DialogTrigger>
-      <DialogContent>
+      <DialogContent className="bg-[#1e293b] border-slate-700">
         <DialogHeader>
-          <DialogTitle>delete this post? 🌙</DialogTitle>
-          <DialogDescription>
-            are you sure you want to delete{" "}
-            <span className="font-semibold text-pink-700">"{postTitle}"</span>?
-            this can't be undone.
+          <DialogTitle className="font-heading text-white tracking-widest">
+            DELETE THIS POST?
+          </DialogTitle>
+          <DialogDescription className="text-slate-400 font-body">
+            Are you sure you want to delete{" "}
+            <span className="font-semibold text-hoop-orange">"{postTitle}"</span>?
+            This can&apos;t be undone.
           </DialogDescription>
         </DialogHeader>
         <DialogFooter className="gap-2">
-          <Button
-            variant="outline"
-            onClick={() => setOpen(false)}
-            disabled={isPending}
-          >
-            keep it
+          <Button variant="secondary" onClick={() => setOpen(false)} disabled={isPending}>
+            Keep It
           </Button>
-          <Button
-            variant="destructive"
-            onClick={handleDelete}
-            disabled={isPending}
-          >
-            {isPending ? (
-              <Loader2 className="w-4 h-4 animate-spin" />
-            ) : (
-              <Trash2 className="w-4 h-4" />
-            )}
-            {isPending ? "deleting..." : "yes, delete"}
+          <Button variant="destructive" onClick={handleDelete} disabled={isPending}>
+            {isPending ? <Loader2 className="w-4 h-4 animate-spin" /> : <Trash2 className="w-4 h-4" />}
+            {isPending ? "Deleting..." : "Delete"}
           </Button>
         </DialogFooter>
       </DialogContent>

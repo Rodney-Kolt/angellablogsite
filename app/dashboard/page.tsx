@@ -4,14 +4,12 @@ import { redirect } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { formatDate } from "@/lib/utils";
-import { PenLine, Lock, Globe, Edit, Trash2, Plus, Eye } from "lucide-react";
+import { PenLine, Lock, Globe, Edit, Plus, Eye } from "lucide-react";
 import Link from "next/link";
 import { DeletePostButton } from "@/components/dashboard/delete-post-button";
 import type { Metadata } from "next";
 
-export const metadata: Metadata = {
-  title: "dashboard",
-};
+export const metadata: Metadata = { title: "dashboard" };
 
 export default async function DashboardPage() {
   const session = await auth();
@@ -21,15 +19,12 @@ export default async function DashboardPage() {
     where: { id: session.user.id },
     select: { isOwner: true },
   });
-
   if (!user?.isOwner) redirect("/");
 
   const posts = await prisma.post.findMany({
     where: { authorId: session.user.id },
     orderBy: { createdAt: "desc" },
-    include: {
-      _count: { select: { reactions: true, comments: true } },
-    },
+    include: { _count: { select: { reactions: true, comments: true } } },
   });
 
   return (
@@ -37,60 +32,64 @@ export default async function DashboardPage() {
       {/* Header */}
       <div className="flex items-center justify-between mb-8">
         <div>
-          <h1 className="font-heading text-4xl font-bold text-pink-800 mb-1">
-            dashboard ✨
-          </h1>
-          <p className="font-body text-pink-400">
-            {posts.length} {posts.length === 1 ? "entry" : "entries"} so far
+          <div className="flex items-center gap-3 mb-1">
+            <span className="text-3xl">🏀</span>
+            <h1 className="font-heading text-4xl text-white tracking-widest">
+              DASHBOARD
+            </h1>
+          </div>
+          <p className="font-body text-xs text-slate-500 uppercase tracking-wider">
+            {posts.length} {posts.length === 1 ? "entry" : "entries"} on the board
           </p>
         </div>
         <Button asChild>
           <Link href="/dashboard/new">
             <Plus className="w-4 h-4" />
-            new post
+            New Post
           </Link>
         </Button>
       </div>
 
+      {/* Court line */}
+      <div className="h-px bg-gradient-to-r from-hoop-orange via-hoop-orange/50 to-transparent mb-8" />
+
       {/* Posts list */}
       {posts.length === 0 ? (
         <div className="text-center py-20">
-          <div className="text-6xl mb-4 float">📝</div>
-          <p className="font-heading text-2xl text-pink-400 mb-2">
-            no posts yet~
+          <div className="text-6xl mb-4 bounce-ball inline-block">🏀</div>
+          <p className="font-heading text-2xl text-slate-600 mb-2 tracking-widest">
+            NO POSTS YET
           </p>
-          <p className="font-body text-pink-300 mb-6">
-            write your first entry! ✨
+          <p className="font-body text-slate-700 mb-6 text-sm">
+            drop your first entry on the board
           </p>
           <Button asChild>
             <Link href="/dashboard/new">
               <PenLine className="w-4 h-4" />
-              write something
+              Write Something
             </Link>
           </Button>
         </div>
       ) : (
-        <div className="space-y-3">
+        <div className="space-y-2">
           {posts.map((post) => (
             <div
               key={post.id}
-              className="flex items-center gap-4 p-4 rounded-2xl bg-white/80 border border-pink-100 shadow-girly hover:shadow-girly-lg transition-all"
+              className="flex items-center gap-4 p-4 rounded-sm bg-[#1e293b] border border-slate-800 hover:border-hoop-orange/40 transition-all"
             >
-              {/* Emoji */}
-              <span className="text-2xl flex-shrink-0">
-                {post.moodEmoji ?? "📝"}
+              <span className="text-xl flex-shrink-0">
+                {post.moodEmoji ?? "🏀"}
               </span>
 
-              {/* Info */}
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-2 mb-1 flex-wrap">
-                  <h3 className="font-heading text-base text-pink-800 truncate">
+                  <h3 className="font-heading text-sm text-white truncate tracking-wider">
                     {post.title}
                   </h3>
                   {post.isDiaryLock ? (
                     <Badge variant="diary" className="gap-1 flex-shrink-0">
                       <Lock className="w-2.5 h-2.5" />
-                      diary lock
+                      locked
                     </Badge>
                   ) : (
                     <Badge variant="outline" className="gap-1 flex-shrink-0">
@@ -99,22 +98,19 @@ export default async function DashboardPage() {
                     </Badge>
                   )}
                 </div>
-                <p className="font-body text-xs text-pink-400">
-                  {formatDate(post.createdAt)} ·{" "}
-                  {post._count.reactions} reactions ·{" "}
-                  {post._count.comments} notes
+                <p className="font-body text-xs text-slate-600">
+                  {formatDate(post.createdAt)} · {post._count.reactions} reactions · {post._count.comments} comments
                 </p>
               </div>
 
-              {/* Actions */}
-              <div className="flex items-center gap-2 flex-shrink-0">
+              <div className="flex items-center gap-1 flex-shrink-0">
                 <Button asChild variant="ghost" size="icon">
-                  <Link href={`/posts/${post.slug}`} title="View post">
+                  <Link href={`/posts/${post.slug}`} title="View">
                     <Eye className="w-4 h-4" />
                   </Link>
                 </Button>
                 <Button asChild variant="ghost" size="icon">
-                  <Link href={`/dashboard/edit/${post.id}`} title="Edit post">
+                  <Link href={`/dashboard/edit/${post.id}`} title="Edit">
                     <Edit className="w-4 h-4" />
                   </Link>
                 </Button>

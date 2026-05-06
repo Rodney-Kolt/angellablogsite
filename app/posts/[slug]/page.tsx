@@ -2,13 +2,13 @@ import { notFound } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { auth } from "@/auth";
 import { formatDate } from "@/lib/utils";
-import { PolaroidGallery } from "@/components/blog/polaroid-gallery";
+import { ImageGallery } from "@/components/blog/image-gallery";
 import { Reactions } from "@/components/blog/reactions";
 import { Comments } from "@/components/blog/comments";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
-import { Lock, Music, Star, Smile, ArrowLeft, Edit } from "lucide-react";
+import { Lock, Music, Star, Zap, ArrowLeft, Edit } from "lucide-react";
 import Link from "next/link";
 import type { Metadata } from "next";
 
@@ -16,16 +16,12 @@ interface PageProps {
   params: { slug: string };
 }
 
-export async function generateMetadata({
-  params,
-}: PageProps): Promise<Metadata> {
+export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const post = await prisma.post.findUnique({
     where: { slug: params.slug },
     select: { title: true, excerpt: true, imageUrls: true },
   });
-
   if (!post) return { title: "Post not found" };
-
   return {
     title: post.title,
     description: post.excerpt ?? undefined,
@@ -49,9 +45,7 @@ export default async function PostPage({ params }: PageProps) {
       author: { select: { name: true, image: true } },
       reactions: true,
       comments: {
-        include: {
-          user: { select: { id: true, name: true, image: true } },
-        },
+        include: { user: { select: { id: true, name: true, image: true } } },
         orderBy: { createdAt: "asc" },
       },
     },
@@ -63,21 +57,20 @@ export default async function PostPage({ params }: PageProps) {
   if (post.isDiaryLock && !isLoggedIn) {
     return (
       <div className="container mx-auto px-4 py-20 text-center max-w-md">
-        <div className="text-6xl mb-6 float">🔒</div>
-        <h1 className="font-heading text-3xl text-pink-800 mb-3">
-          diary lock 🌙
+        <div className="text-6xl mb-6 float inline-block">🔒</div>
+        <h1 className="font-heading text-3xl text-white mb-3 tracking-widest">
+          LOCKED POST
         </h1>
-        <p className="font-body text-pink-500 mb-6">
-          this entry is only for signed-in readers. sign in to unlock it ✨
+        <p className="font-body text-slate-500 mb-6 text-sm">
+          this entry is only for signed-in readers. step on the court to unlock it.
         </p>
         <Button asChild>
-          <Link href="/login">sign in to read</Link>
+          <Link href="/login">Sign In to Read</Link>
         </Button>
       </div>
     );
   }
 
-  // Reaction counts
   const reactionCounts = {
     same: post.reactions.filter((r) => r.type === "same").length,
     feltThat: post.reactions.filter((r) => r.type === "feltThat").length,
@@ -85,15 +78,9 @@ export default async function PostPage({ params }: PageProps) {
   };
 
   const userReactions = {
-    same: post.reactions.some(
-      (r) => r.userId === currentUserId && r.type === "same"
-    ),
-    feltThat: post.reactions.some(
-      (r) => r.userId === currentUserId && r.type === "feltThat"
-    ),
-    hugs: post.reactions.some(
-      (r) => r.userId === currentUserId && r.type === "hugs"
-    ),
+    same: post.reactions.some((r) => r.userId === currentUserId && r.type === "same"),
+    feltThat: post.reactions.some((r) => r.userId === currentUserId && r.type === "feltThat"),
+    hugs: post.reactions.some((r) => r.userId === currentUserId && r.type === "hugs"),
   };
 
   return (
@@ -101,21 +88,23 @@ export default async function PostPage({ params }: PageProps) {
       {/* Back */}
       <Link
         href="/"
-        className="inline-flex items-center gap-1.5 font-body text-sm text-pink-400 hover:text-pink-600 transition-colors mb-8 group"
+        className="inline-flex items-center gap-1.5 font-body text-xs text-slate-500 hover:text-hoop-orange transition-colors mb-8 group uppercase tracking-wider"
       >
         <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
-        back to home
+        Back to Court
       </Link>
 
-      {/* Post header */}
       <article>
         <header className="mb-8">
+          {/* Top accent line */}
+          <div className="h-0.5 bg-gradient-to-r from-hoop-orange to-transparent mb-6" />
+
           {/* Badges */}
           <div className="flex items-center gap-2 mb-4 flex-wrap">
             {post.isDiaryLock && (
               <Badge variant="diary" className="gap-1">
                 <Lock className="w-2.5 h-2.5" />
-                diary lock
+                locked
               </Badge>
             )}
             {post.moodEmoji && (
@@ -124,45 +113,57 @@ export default async function PostPage({ params }: PageProps) {
           </div>
 
           {/* Title */}
-          <h1 className="font-heading text-4xl md:text-5xl font-bold text-pink-800 mb-4 leading-tight">
+          <h1 className="font-heading text-4xl md:text-5xl text-white mb-3 leading-tight tracking-wider">
             {post.title}
           </h1>
 
-          {/* Date */}
-          <p className="font-body text-sm text-pink-400 mb-6">
-            {formatDate(post.createdAt)}
-          </p>
+          {/* Date + author */}
+          <div className="flex items-center gap-3 mb-6">
+            <p className="font-body text-xs text-slate-600 uppercase tracking-wider">
+              {formatDate(post.createdAt)}
+            </p>
+            {post.author.name && (
+              <>
+                <span className="text-slate-700">·</span>
+                <p className="font-body text-xs text-slate-600 uppercase tracking-wider">
+                  {post.author.name}
+                </p>
+              </>
+            )}
+          </div>
 
-          {/* Kiro prompts card */}
+          {/* Game day stats card */}
           {(post.mood || post.song || post.tinyJoy) && (
-            <div className="p-5 rounded-3xl bg-gradient-to-br from-pink-50 to-purple-50 border border-pink-100 space-y-3 mb-6">
+            <div className="p-4 rounded-sm bg-slate-900 border border-slate-800 space-y-2 mb-6">
+              <p className="font-heading text-xs text-hoop-orange tracking-widest mb-3">
+                GAME DAY STATS
+              </p>
               {post.mood && (
                 <div className="flex items-center gap-2">
-                  <Smile className="w-4 h-4 text-pink-400 flex-shrink-0" />
-                  <span className="font-body text-sm text-pink-600">
-                    <span className="font-semibold">mood:</span> {post.mood}
+                  <Zap className="w-3.5 h-3.5 text-hoop-orange flex-shrink-0" />
+                  <span className="font-body text-xs text-slate-400">
+                    <span className="text-slate-300 font-semibold">vibe:</span>{" "}
+                    {post.moodEmoji} {post.mood}
                   </span>
                 </div>
               )}
               {post.song && (
                 <div className="flex items-center gap-2">
-                  <Music className="w-4 h-4 text-purple-400 flex-shrink-0" />
-                  <span className="font-body text-sm text-purple-600">
-                    <span className="font-semibold">looping:</span> {post.song}
+                  <Music className="w-3.5 h-3.5 text-hoop-neon flex-shrink-0" />
+                  <span className="font-body text-xs text-slate-400">
+                    <span className="text-slate-300 font-semibold">locker room track:</span>{" "}
+                    {post.song}
                     {post.songArtist && (
-                      <span className="text-purple-400">
-                        {" "}
-                        — {post.songArtist}
-                      </span>
+                      <span className="text-slate-600"> — {post.songArtist}</span>
                     )}
                   </span>
                 </div>
               )}
               {post.tinyJoy && (
                 <div className="flex items-center gap-2">
-                  <Star className="w-4 h-4 text-yellow-400 flex-shrink-0" />
-                  <span className="font-body text-sm text-yellow-700">
-                    <span className="font-semibold">tiny joy:</span>{" "}
+                  <Star className="w-3.5 h-3.5 text-yellow-500 flex-shrink-0" />
+                  <span className="font-body text-xs text-slate-400">
+                    <span className="text-slate-300 font-semibold">win of the day:</span>{" "}
                     {post.tinyJoy}
                   </span>
                 </div>
@@ -175,15 +176,15 @@ export default async function PostPage({ params }: PageProps) {
             <Button asChild variant="outline" size="sm">
               <Link href={`/dashboard/edit/${post.id}`}>
                 <Edit className="w-3.5 h-3.5" />
-                edit post
+                Edit Post
               </Link>
             </Button>
           )}
         </header>
 
-        {/* Polaroid gallery */}
+        {/* Image gallery */}
         {post.imageUrls && post.imageUrls.length > 0 && (
-          <PolaroidGallery images={post.imageUrls} title={post.title} />
+          <ImageGallery images={post.imageUrls} title={post.title} />
         )}
 
         {/* Content */}

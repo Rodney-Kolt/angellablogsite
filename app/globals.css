@@ -2,30 +2,36 @@
 @tailwind components;
 @tailwind utilities;
 
-@import url('https://fonts.googleapis.com/css2?family=Fredoka+One&family=Quicksand:wght@300;400;500;600;700&family=Caveat:wght@400;500;600;700&display=swap');
+/* Basketball fonts */
+@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Poppins:wght@400;500;600;700;800;900&family=Inter:wght@300;400;500;600;700&display=swap');
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 340 20% 20%;
-    --card: 0 0% 100%;
-    --card-foreground: 340 20% 20%;
-    --popover: 0 0% 100%;
-    --popover-foreground: 340 20% 20%;
-    --primary: 330 80% 65%;
+    --background: 0 0% 7%;
+    --foreground: 210 40% 98%;
+    --card: 222 47% 11%;
+    --card-foreground: 210 40% 98%;
+    --popover: 222 47% 11%;
+    --popover-foreground: 210 40% 98%;
+    --primary: 24 95% 53%;
     --primary-foreground: 0 0% 100%;
-    --secondary: 270 60% 90%;
-    --secondary-foreground: 270 40% 40%;
-    --muted: 330 30% 95%;
-    --muted-foreground: 330 20% 55%;
-    --accent: 270 60% 90%;
-    --accent-foreground: 270 40% 40%;
-    --destructive: 0 84.2% 60.2%;
+    --secondary: 217 33% 17%;
+    --secondary-foreground: 210 40% 98%;
+    --muted: 217 33% 17%;
+    --muted-foreground: 215 20% 65%;
+    --accent: 24 95% 53%;
+    --accent-foreground: 0 0% 100%;
+    --destructive: 0 62% 50%;
     --destructive-foreground: 0 0% 98%;
-    --border: 330 40% 90%;
-    --input: 330 40% 90%;
-    --ring: 330 80% 65%;
-    --radius: 1rem;
+    --border: 217 33% 20%;
+    --input: 217 33% 20%;
+    --ring: 24 95% 53%;
+    --radius: 0.5rem;
+
+    /* Font variables */
+    --font-bebas: 'Bebas Neue', sans-serif;
+    --font-poppins: 'Poppins', sans-serif;
+    --font-inter: 'Inter', sans-serif;
   }
 }
 
@@ -35,109 +41,214 @@
   }
 
   body {
-    @apply bg-background text-foreground font-body;
-    background: linear-gradient(135deg, #fce4ec 0%, #f3e5f5 25%, #e8eaf6 50%, #e3f2fd 75%, #fce4ec 100%);
+    @apply bg-[#111111] text-[#F8FAFC] font-body antialiased;
+    background-color: #111111;
+    background-image:
+      repeating-linear-gradient(
+        90deg,
+        transparent,
+        transparent 60px,
+        rgba(249,115,22,0.03) 60px,
+        rgba(249,115,22,0.03) 61px
+      ),
+      repeating-linear-gradient(
+        0deg,
+        transparent,
+        transparent 60px,
+        rgba(249,115,22,0.03) 60px,
+        rgba(249,115,22,0.03) 61px
+      );
     background-attachment: fixed;
     min-height: 100vh;
   }
 
   h1, h2, h3, h4, h5, h6 {
-    @apply font-heading;
+    @apply font-heading tracking-wide;
   }
-}
-
-/* Custom font variables */
-:root {
-  --font-fredoka: 'Fredoka One', cursive;
-  --font-quicksand: 'Quicksand', sans-serif;
-  --font-caveat: 'Caveat', cursive;
-}
-
-/* TipTap prose styles */
-.prose {
-  @apply font-body text-pink-900;
-}
-
-.prose h2 {
-  @apply font-heading text-2xl text-pink-800 mt-6 mb-3;
-}
-
-.prose h3 {
-  @apply font-heading text-xl text-pink-700 mt-5 mb-2;
-}
-
-.prose p {
-  @apply mb-4 leading-relaxed;
-}
-
-.prose ul {
-  @apply list-disc list-inside mb-4 space-y-1;
-}
-
-.prose ol {
-  @apply list-decimal list-inside mb-4 space-y-1;
-}
-
-.prose blockquote {
-  @apply border-l-4 border-pink-300 pl-4 italic text-pink-600 my-4;
-}
-
-.prose a {
-  @apply text-pink-500 underline hover:text-pink-700;
-}
-
-.prose hr {
-  @apply border-pink-200 my-6;
-}
-
-.prose img {
-  @apply rounded-2xl shadow-girly my-4 max-w-full;
-}
-
-/* TipTap placeholder */
-.tiptap p.is-editor-empty:first-child::before {
-  content: attr(data-placeholder);
-  @apply text-pink-300 pointer-events-none float-left h-0;
 }
 
 /* Scrollbar */
 ::-webkit-scrollbar {
   width: 6px;
 }
-
 ::-webkit-scrollbar-track {
-  background: #fce4ec;
+  background: #1a1a1a;
 }
-
 ::-webkit-scrollbar-thumb {
-  background: #f9a8d4;
+  background: #F97316;
   border-radius: 3px;
 }
-
 ::-webkit-scrollbar-thumb:hover {
-  background: #f472b6;
+  background: #ea580c;
 }
 
-/* Loading spinner */
-@keyframes spin-girly {
-  to { transform: rotate(360deg); }
+/* TipTap prose — dark theme */
+.prose {
+  @apply font-body text-slate-200;
+}
+.prose h2 {
+  @apply font-heading text-2xl text-hoop-orange mt-6 mb-3 tracking-wide;
+}
+.prose h3 {
+  @apply font-heading text-xl text-hoop-white mt-5 mb-2 tracking-wide;
+}
+.prose p {
+  @apply mb-4 leading-relaxed text-slate-300;
+}
+.prose ul {
+  @apply list-disc list-inside mb-4 space-y-1 text-slate-300;
+}
+.prose ol {
+  @apply list-decimal list-inside mb-4 space-y-1 text-slate-300;
+}
+.prose blockquote {
+  @apply border-l-4 border-hoop-orange pl-4 italic text-slate-400 my-4;
+}
+.prose a {
+  @apply text-hoop-orange underline hover:text-hoop-neon transition-colors;
+}
+.prose hr {
+  @apply border-slate-700 my-6;
+}
+.prose img {
+  @apply rounded-lg shadow-court my-4 max-w-full;
 }
 
-.spinner-girly {
-  width: 40px;
-  height: 40px;
-  border: 3px solid #fce7f3;
-  border-top-color: #f9a8d4;
-  border-radius: 50%;
-  animation: spin-girly 0.8s linear infinite;
+/* TipTap placeholder */
+.tiptap p.is-editor-empty:first-child::before {
+  content: attr(data-placeholder);
+  @apply text-slate-600 pointer-events-none float-left h-0;
 }
 
-/* Floating animation */
+/* Neon glow text */
+.neon-text {
+  color: #39FF14;
+  text-shadow: 0 0 7px #39FF14, 0 0 10px #39FF14, 0 0 21px #39FF14;
+}
+
+.orange-text {
+  color: #F97316;
+  text-shadow: 0 0 7px rgba(249,115,22,0.5);
+}
+
+/* Basketball bounce animation */
+.bounce-ball {
+  animation: bounce-ball 0.8s infinite;
+}
+
+@keyframes bounce-ball {
+  0%, 100% {
+    transform: translateY(0);
+    animation-timing-function: cubic-bezier(0.8, 0, 1, 1);
+  }
+  50% {
+    transform: translateY(-20px);
+    animation-timing-function: cubic-bezier(0, 0, 0.2, 1);
+  }
+}
+
+/* Float */
 .float {
   animation: float 3s ease-in-out infinite;
 }
 
 @keyframes float {
   0%, 100% { transform: translateY(0px); }
-  50% { transform: translateY(-8px); }
+  50% { transform: translateY(-10px); }
+}
+
+/* Hoop shake */
+.hoop-shake {
+  animation: hoop-shake 0.5s ease-in-out;
+}
+
+@keyframes hoop-shake {
+  0%, 100% { transform: rotate(0deg); }
+  15% { transform: rotate(-4deg); }
+  30% { transform: rotate(4deg); }
+  45% { transform: rotate(-3deg); }
+  60% { transform: rotate(3deg); }
+  75% { transform: rotate(-1deg); }
+}
+
+/* Card hover tilt */
+.card-tilt {
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+.card-tilt:hover {
+  transform: translateY(-4px) rotate(0.5deg);
+  box-shadow: 0 8px 32px rgba(249,115,22,0.2), 0 0 0 1px rgba(249,115,22,0.3);
+}
+
+/* Neon button glow */
+.btn-neon {
+  box-shadow: 0 0 5px #39FF14, 0 0 10px rgba(57,255,20,0.3);
+  transition: box-shadow 0.2s ease, transform 0.2s ease;
+}
+.btn-neon:hover {
+  box-shadow: 0 0 10px #39FF14, 0 0 25px #39FF14, 0 0 50px rgba(57,255,20,0.3);
+  transform: scale(1.05);
+}
+
+/* Orange glow button */
+.btn-orange {
+  box-shadow: 0 0 5px rgba(249,115,22,0.4);
+  transition: box-shadow 0.2s ease, transform 0.2s ease;
+}
+.btn-orange:hover {
+  box-shadow: 0 0 15px #F97316, 0 0 30px rgba(249,115,22,0.4);
+  transform: scale(1.05);
+}
+
+/* Chalkboard style */
+.chalkboard {
+  background-color: #1a2a1a;
+  background-image:
+    repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 28px,
+      rgba(255,255,255,0.04) 28px,
+      rgba(255,255,255,0.04) 29px
+    );
+  border: 2px solid #2d4a2d;
+}
+
+/* Loading spinner basketball */
+.spinner-ball {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 35%, #F97316, #c2410c);
+  animation: spin-ball 0.8s linear infinite;
+  position: relative;
+}
+
+.spinner-ball::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: transparent;
+  border: 2px solid rgba(0,0,0,0.4);
+  border-top-color: transparent;
+  border-bottom-color: transparent;
+}
+
+@keyframes spin-ball {
+  to { transform: rotate(360deg); }
+}
+
+/* Court line accent */
+.court-line {
+  position: relative;
+}
+.court-line::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, #F97316, transparent);
 }

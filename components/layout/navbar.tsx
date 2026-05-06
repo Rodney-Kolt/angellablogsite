@@ -5,15 +5,7 @@ import { useSession, signOut } from "next-auth/react";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { getInitials } from "@/lib/utils";
-import {
-  Sparkles,
-  PenLine,
-  LogOut,
-  User,
-  LayoutDashboard,
-  Menu,
-  X,
-} from "lucide-react";
+import { PenLine, LogOut, Menu, X } from "lucide-react";
 import { useState } from "react";
 
 export function Navbar() {
@@ -22,50 +14,54 @@ export function Navbar() {
   const isOwner = (session?.user as { isOwner?: boolean })?.isOwner;
 
   return (
-    <nav className="sticky top-0 z-50 w-full border-b border-pink-100 bg-white/70 backdrop-blur-md">
-      <div className="container mx-auto px-4 h-16 flex items-center justify-between">
+    <nav className="sticky top-0 z-50 w-full border-b border-slate-800 bg-[#0d0d0d]/90 backdrop-blur-md">
+      {/* Top orange accent line */}
+      <div className="h-0.5 w-full bg-gradient-to-r from-transparent via-hoop-orange to-transparent" />
+
+      <div className="container mx-auto px-4 h-14 flex items-center justify-between">
         {/* Logo */}
         <Link
           href="/"
           className="flex items-center gap-2 group"
           onClick={() => setMobileOpen(false)}
         >
-          <div className="w-8 h-8 rounded-full bg-gradient-to-br from-pink-400 to-purple-400 flex items-center justify-center shadow-girly group-hover:scale-110 transition-transform">
-            <Sparkles className="w-4 h-4 text-white" />
-          </div>
-          <span className="font-heading text-xl font-bold bg-gradient-to-r from-pink-500 to-purple-500 bg-clip-text text-transparent">
-            kiro daily
+          <span className="text-xl group-hover:animate-bounce-ball transition-transform">
+            🏀
+          </span>
+          <span className="font-heading text-2xl tracking-widest text-white group-hover:text-hoop-orange transition-colors">
+            KIRO
+            <span className="text-hoop-orange">.</span>
           </span>
         </Link>
 
         {/* Desktop Nav */}
-        <div className="hidden md:flex items-center gap-4">
+        <div className="hidden md:flex items-center gap-6">
           <Link
             href="/"
-            className="font-body text-sm text-pink-600 hover:text-pink-800 transition-colors"
+            className="font-body text-xs text-slate-400 hover:text-hoop-orange transition-colors uppercase tracking-widest"
           >
-            home
+            Home
           </Link>
           <Link
             href="/archive"
-            className="font-body text-sm text-pink-600 hover:text-pink-800 transition-colors"
+            className="font-body text-xs text-slate-400 hover:text-hoop-orange transition-colors uppercase tracking-widest"
           >
-            archive
+            Archive
           </Link>
 
           {session ? (
             <div className="flex items-center gap-3">
               {isOwner && (
-                <Button asChild size="sm" variant="girly">
+                <Button asChild size="sm" variant="neon">
                   <Link href="/dashboard">
                     <PenLine className="w-3.5 h-3.5" />
-                    write
+                    Write
                   </Link>
                 </Button>
               )}
               <div className="flex items-center gap-2">
                 <Link href="/profile">
-                  <Avatar className="w-8 h-8 cursor-pointer hover:ring-pink-400 transition-all">
+                  <Avatar className="w-8 h-8 cursor-pointer hover:ring-hoop-orange transition-all">
                     <AvatarImage src={session.user?.image ?? ""} />
                     <AvatarFallback>
                       {getInitials(session.user?.name ?? session.user?.email ?? "?")}
@@ -74,7 +70,7 @@ export function Navbar() {
                 </Link>
                 <button
                   onClick={() => signOut({ callbackUrl: "/" })}
-                  className="text-pink-400 hover:text-pink-600 transition-colors"
+                  className="text-slate-600 hover:text-hoop-orange transition-colors"
                   title="Sign out"
                 >
                   <LogOut className="w-4 h-4" />
@@ -84,8 +80,7 @@ export function Navbar() {
           ) : (
             <Button asChild size="sm">
               <Link href="/login">
-                <Sparkles className="w-3.5 h-3.5" />
-                sign in
+                Sign In
               </Link>
             </Button>
           )}
@@ -93,7 +88,7 @@ export function Navbar() {
 
         {/* Mobile menu button */}
         <button
-          className="md:hidden text-pink-500 hover:text-pink-700"
+          className="md:hidden text-slate-400 hover:text-hoop-orange transition-colors"
           onClick={() => setMobileOpen(!mobileOpen)}
         >
           {mobileOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
@@ -102,56 +97,56 @@ export function Navbar() {
 
       {/* Mobile menu */}
       {mobileOpen && (
-        <div className="md:hidden border-t border-pink-100 bg-white/95 backdrop-blur-md px-4 py-4 flex flex-col gap-3">
+        <div className="md:hidden border-t border-slate-800 bg-[#0d0d0d] px-4 py-4 flex flex-col gap-3">
           <Link
             href="/"
-            className="font-body text-sm text-pink-600 hover:text-pink-800 py-2"
+            className="font-body text-xs text-slate-400 hover:text-hoop-orange py-2 uppercase tracking-widest"
             onClick={() => setMobileOpen(false)}
           >
-            🏠 home
+            🏠 Home
           </Link>
           <Link
             href="/archive"
-            className="font-body text-sm text-pink-600 hover:text-pink-800 py-2"
+            className="font-body text-xs text-slate-400 hover:text-hoop-orange py-2 uppercase tracking-widest"
             onClick={() => setMobileOpen(false)}
           >
-            📚 archive
+            📋 Archive
           </Link>
           {session ? (
             <>
               {isOwner && (
                 <Link
                   href="/dashboard"
-                  className="font-body text-sm text-pink-600 hover:text-pink-800 py-2"
+                  className="font-body text-xs text-slate-400 hover:text-hoop-orange py-2 uppercase tracking-widest"
                   onClick={() => setMobileOpen(false)}
                 >
-                  ✏️ dashboard
+                  ✏️ Dashboard
                 </Link>
               )}
               <Link
                 href="/profile"
-                className="font-body text-sm text-pink-600 hover:text-pink-800 py-2"
+                className="font-body text-xs text-slate-400 hover:text-hoop-orange py-2 uppercase tracking-widest"
                 onClick={() => setMobileOpen(false)}
               >
-                👤 profile
+                👤 Profile
               </Link>
               <button
                 onClick={() => {
                   setMobileOpen(false);
                   signOut({ callbackUrl: "/" });
                 }}
-                className="font-body text-sm text-pink-400 hover:text-pink-600 py-2 text-left"
+                className="font-body text-xs text-slate-600 hover:text-hoop-orange py-2 text-left uppercase tracking-widest"
               >
-                🚪 sign out
+                🚪 Sign Out
               </button>
             </>
           ) : (
             <Link
               href="/login"
-              className="font-body text-sm text-pink-600 hover:text-pink-800 py-2"
+              className="font-body text-xs text-hoop-orange py-2 uppercase tracking-widest"
               onClick={() => setMobileOpen(false)}
             >
-              ✨ sign in
+              🏀 Sign In
             </Link>
           )}
         </div>

@@ -4,23 +4,25 @@ import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "@/lib/utils";
 
 const buttonVariants = cva(
-  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-full text-sm font-medium font-body transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0",
+  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-sm text-sm font-body font-semibold uppercase tracking-wider transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-hoop-orange focus-visible:ring-offset-2 focus-visible:ring-offset-[#111] disabled:pointer-events-none disabled:opacity-40 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0",
   {
     variants: {
       variant: {
         default:
-          "bg-gradient-to-r from-pink-400 to-purple-400 text-white shadow-girly hover:shadow-girly-lg hover:scale-105 active:scale-95",
+          "bg-hoop-orange text-white hover:bg-orange-600 hover:scale-105 active:scale-95 btn-orange",
         destructive:
-          "bg-red-400 text-white shadow-sm hover:bg-red-500 hover:scale-105",
+          "bg-red-600 text-white hover:bg-red-700 hover:scale-105",
         outline:
-          "border-2 border-pink-300 bg-white/80 text-pink-600 hover:bg-pink-50 hover:scale-105 shadow-sm",
+          "border border-hoop-orange bg-transparent text-hoop-orange hover:bg-hoop-orange/10 hover:scale-105",
         secondary:
-          "bg-lavender-100 text-lavender-700 hover:bg-lavender-200 hover:scale-105 shadow-sm",
+          "bg-slate-800 text-slate-200 border border-slate-700 hover:bg-slate-700 hover:scale-105",
         ghost:
-          "text-pink-600 hover:bg-pink-50 hover:text-pink-700 hover:scale-105",
-        link: "text-pink-500 underline-offset-4 hover:underline",
-        girly:
-          "bg-gradient-to-r from-pink-300 via-purple-300 to-blue-300 text-white shadow-girly hover:shadow-girly-lg hover:scale-105 active:scale-95",
+          "text-slate-400 hover:bg-slate-800 hover:text-white hover:scale-105",
+        link: "text-hoop-orange underline-offset-4 hover:underline",
+        neon:
+          "bg-transparent border border-hoop-neon text-hoop-neon btn-neon hover:bg-hoop-neon/10 active:scale-95",
+        girly: // keep alias so existing code doesn't break
+          "bg-hoop-orange text-white hover:bg-orange-600 hover:scale-105 active:scale-95 btn-orange",
       },
       size: {
         default: "h-10 px-6 py-2",

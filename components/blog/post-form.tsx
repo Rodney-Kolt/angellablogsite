@@ -7,16 +7,14 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { Badge } from "@/components/ui/badge";
 import {
-  Sparkles,
   Lock,
   Globe,
   ImagePlus,
   X,
   Loader2,
   Music,
-  Smile,
+  Zap,
   Star,
 } from "lucide-react";
 import Image from "next/image";
@@ -24,14 +22,14 @@ import toast from "react-hot-toast";
 import type { Post } from "@prisma/client";
 
 const MOOD_PRESETS = [
-  { emoji: "🌸", label: "soft & hopeful" },
-  { emoji: "🌙", label: "dreamy" },
-  { emoji: "☁️", label: "cloudy" },
-  { emoji: "✨", label: "sparkly" },
-  { emoji: "🍵", label: "cozy" },
-  { emoji: "🌧️", label: "rainy day" },
-  { emoji: "🦋", label: "transforming" },
-  { emoji: "💕", label: "in love" },
+  { emoji: "🏀", label: "in the zone" },
+  { emoji: "🔥", label: "heat check" },
+  { emoji: "💪", label: "grinding" },
+  { emoji: "😤", label: "locked in" },
+  { emoji: "🧊", label: "ice cold" },
+  { emoji: "⚡", label: "electric" },
+  { emoji: "😴", label: "recovery day" },
+  { emoji: "🏆", label: "winning" },
 ];
 
 interface PostFormProps {
@@ -54,7 +52,6 @@ export function PostForm({ post }: PostFormProps) {
   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
     if (!files || files.length === 0) return;
-
     setUploading(true);
     try {
       for (const file of Array.from(files)) {
@@ -63,10 +60,10 @@ export function PostForm({ post }: PostFormProps) {
         const result = await uploadImage(fd);
         if (result?.url) {
           setImageUrls((prev) => [...prev, result.url]);
-          toast.success("image uploaded! 🌸");
+          toast.success("image uploaded 🏀");
         }
       }
-    } catch (err) {
+    } catch {
       toast.error("image upload failed");
     } finally {
       setUploading(false);
@@ -80,14 +77,8 @@ export function PostForm({ post }: PostFormProps) {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!title.trim()) {
-      toast.error("title is required 🌸");
-      return;
-    }
-    if (!content || content === "<p></p>") {
-      toast.error("content is required 🌸");
-      return;
-    }
+    if (!title.trim()) { toast.error("title is required"); return; }
+    if (!content || content === "<p></p>") { toast.error("content is required"); return; }
 
     const fd = new FormData();
     fd.append("title", title);
@@ -102,15 +93,12 @@ export function PostForm({ post }: PostFormProps) {
 
     startTransition(async () => {
       try {
-        if (post) {
-          await updatePost(post.id, fd);
-        } else {
-          await createPost(fd);
-        }
-        toast.success(post ? "post updated! ✨" : "post published! 🌸");
+        if (post) { await updatePost(post.id, fd); }
+        else { await createPost(fd); }
+        toast.success(post ? "post updated 🏀" : "post published 🏀");
       } catch (err: unknown) {
         if (err instanceof Error && err.message !== "NEXT_REDIRECT") {
-          toast.error("something went wrong 😢");
+          toast.error("something went wrong");
         }
       }
     });
@@ -120,47 +108,41 @@ export function PostForm({ post }: PostFormProps) {
     <form onSubmit={handleSubmit} className="space-y-8">
       {/* Title */}
       <div className="space-y-2">
-        <Label htmlFor="title" className="text-base">
-          ✨ title
-        </Label>
+        <Label htmlFor="title">Post Title</Label>
         <Input
           id="title"
           value={title}
           onChange={(e) => setTitle(e.target.value)}
-          placeholder="what's today's story?"
-          className="text-lg font-heading"
+          placeholder="what happened on the court today?"
+          className="text-lg font-heading tracking-wider"
           required
         />
       </div>
 
-      {/* Kiro Prompts */}
-      <div className="p-5 rounded-3xl bg-gradient-to-br from-pink-50 to-purple-50 border border-pink-100 space-y-4">
-        <h3 className="font-heading text-base text-pink-700 flex items-center gap-2">
-          <Sparkles className="w-4 h-4" />
-          kiro prompts
+      {/* Game Day Prompts */}
+      <div className="p-5 rounded-sm bg-slate-900 border border-slate-700 space-y-4">
+        <h3 className="font-heading text-sm text-hoop-orange tracking-widest flex items-center gap-2">
+          <Zap className="w-4 h-4" />
+          GAME DAY PROMPTS
         </h3>
 
         {/* Mood */}
         <div className="space-y-2">
           <Label className="flex items-center gap-1.5">
-            <Smile className="w-3.5 h-3.5" />
-            mood
+            <Zap className="w-3.5 h-3.5" />
+            Vibe
           </Label>
           <div className="flex flex-wrap gap-2 mb-2">
             {MOOD_PRESETS.map((preset) => (
               <button
                 key={preset.emoji}
                 type="button"
-                onClick={() => {
-                  setMoodEmoji(preset.emoji);
-                  setMood(preset.label);
-                }}
+                onClick={() => { setMoodEmoji(preset.emoji); setMood(preset.label); }}
                 className={`
-                  flex items-center gap-1 px-3 py-1.5 rounded-full text-xs font-body border-2 transition-all
-                  ${
-                    moodEmoji === preset.emoji
-                      ? "border-pink-400 bg-pink-100 text-pink-700"
-                      : "border-pink-200 bg-white text-pink-500 hover:border-pink-300"
+                  flex items-center gap-1 px-3 py-1.5 rounded-sm text-xs font-body border transition-all uppercase tracking-wider
+                  ${moodEmoji === preset.emoji
+                    ? "border-hoop-orange bg-hoop-orange/20 text-hoop-orange"
+                    : "border-slate-700 bg-slate-800 text-slate-500 hover:border-slate-600"
                   }
                 `}
               >
@@ -169,19 +151,8 @@ export function PostForm({ post }: PostFormProps) {
             ))}
           </div>
           <div className="flex gap-2">
-            <Input
-              value={moodEmoji}
-              onChange={(e) => setMoodEmoji(e.target.value)}
-              placeholder="emoji"
-              className="w-20"
-              maxLength={4}
-            />
-            <Input
-              value={mood}
-              onChange={(e) => setMood(e.target.value)}
-              placeholder="describe your mood..."
-              className="flex-1"
-            />
+            <Input value={moodEmoji} onChange={(e) => setMoodEmoji(e.target.value)} placeholder="emoji" className="w-20" maxLength={4} />
+            <Input value={mood} onChange={(e) => setMood(e.target.value)} placeholder="describe your vibe..." className="flex-1" />
           </div>
         </div>
 
@@ -189,73 +160,47 @@ export function PostForm({ post }: PostFormProps) {
         <div className="space-y-2">
           <Label className="flex items-center gap-1.5">
             <Music className="w-3.5 h-3.5" />
-            currently looping
+            Locker Room Track
           </Label>
           <div className="flex gap-2">
-            <Input
-              value={song}
-              onChange={(e) => setSong(e.target.value)}
-              placeholder="song title"
-              className="flex-1"
-            />
-            <Input
-              value={songArtist}
-              onChange={(e) => setSongArtist(e.target.value)}
-              placeholder="artist"
-              className="flex-1"
-            />
+            <Input value={song} onChange={(e) => setSong(e.target.value)} placeholder="song title" className="flex-1" />
+            <Input value={songArtist} onChange={(e) => setSongArtist(e.target.value)} placeholder="artist" className="flex-1" />
           </div>
         </div>
 
-        {/* Tiny Joy */}
+        {/* Tiny Joy → Win of the Day */}
         <div className="space-y-2">
           <Label className="flex items-center gap-1.5">
             <Star className="w-3.5 h-3.5" />
-            today's tiny joy
+            Win of the Day
           </Label>
-          <Input
-            value={tinyJoy}
-            onChange={(e) => setTinyJoy(e.target.value)}
-            placeholder="the little thing that made today worth it..."
-          />
+          <Input value={tinyJoy} onChange={(e) => setTinyJoy(e.target.value)} placeholder="the small W that made today worth it..." />
         </div>
       </div>
 
       {/* Content */}
       <div className="space-y-2">
-        <Label className="text-base">📝 content</Label>
-        <RichEditor
-          content={content}
-          onChange={setContent}
-          placeholder="write your heart out... 🌸"
-        />
+        <Label>Content</Label>
+        <RichEditor content={content} onChange={setContent} placeholder="drop your thoughts on the court..." />
       </div>
 
       {/* Images */}
       <div className="space-y-3">
-        <Label className="text-base flex items-center gap-2">
+        <Label className="flex items-center gap-2">
           <ImagePlus className="w-4 h-4" />
-          polaroid gallery
+          Photos
         </Label>
-
-        {/* Image previews */}
         {imageUrls.length > 0 && (
           <div className="flex flex-wrap gap-3">
             {imageUrls.map((url, i) => (
               <div key={i} className="relative group">
-                <div className="w-24 h-24 rounded-xl overflow-hidden border-2 border-pink-200">
-                  <Image
-                    src={url}
-                    alt={`Upload ${i + 1}`}
-                    width={96}
-                    height={96}
-                    className="object-cover w-full h-full"
-                  />
+                <div className="w-24 h-24 rounded-sm overflow-hidden border border-slate-700">
+                  <Image src={url} alt={`Upload ${i + 1}`} width={96} height={96} className="object-cover w-full h-full" />
                 </div>
                 <button
                   type="button"
                   onClick={() => removeImage(url)}
-                  className="absolute -top-2 -right-2 bg-red-400 text-white rounded-full p-0.5 opacity-0 group-hover:opacity-100 transition-opacity"
+                  className="absolute -top-2 -right-2 bg-red-600 text-white rounded-sm p-0.5 opacity-0 group-hover:opacity-100 transition-opacity"
                 >
                   <X className="w-3 h-3" />
                 </button>
@@ -263,73 +208,41 @@ export function PostForm({ post }: PostFormProps) {
             ))}
           </div>
         )}
-
-        <label className="flex items-center gap-2 px-4 py-3 rounded-2xl border-2 border-dashed border-pink-200 bg-pink-50/50 cursor-pointer hover:border-pink-400 hover:bg-pink-50 transition-all">
-          {uploading ? (
-            <Loader2 className="w-4 h-4 text-pink-400 animate-spin" />
-          ) : (
-            <ImagePlus className="w-4 h-4 text-pink-400" />
-          )}
-          <span className="font-body text-sm text-pink-500">
+        <label className="flex items-center gap-2 px-4 py-3 rounded-sm border border-dashed border-slate-700 bg-slate-900 cursor-pointer hover:border-hoop-orange/50 hover:bg-slate-800 transition-all">
+          {uploading ? <Loader2 className="w-4 h-4 text-hoop-orange animate-spin" /> : <ImagePlus className="w-4 h-4 text-slate-500" />}
+          <span className="font-body text-sm text-slate-500 uppercase tracking-wider">
             {uploading ? "uploading..." : "add photos"}
           </span>
-          <input
-            type="file"
-            accept="image/*"
-            multiple
-            onChange={handleImageUpload}
-            className="hidden"
-            disabled={uploading}
-          />
+          <input type="file" accept="image/*" multiple onChange={handleImageUpload} className="hidden" disabled={uploading} />
         </label>
       </div>
 
       {/* Privacy */}
-      <div className="flex items-center gap-4 p-4 rounded-2xl bg-purple-50 border border-purple-100">
+      <div className="flex items-center gap-4 p-4 rounded-sm bg-slate-900 border border-slate-700">
         <button
           type="button"
           onClick={() => setIsDiaryLock(!isDiaryLock)}
           className={`
-            flex items-center gap-2 px-4 py-2 rounded-full border-2 font-body text-sm transition-all
-            ${
-              isDiaryLock
-                ? "border-purple-400 bg-purple-100 text-purple-700"
-                : "border-purple-200 bg-white text-purple-500 hover:border-purple-300"
+            flex items-center gap-2 px-4 py-2 rounded-sm border font-body text-xs font-semibold uppercase tracking-wider transition-all
+            ${isDiaryLock
+              ? "border-hoop-neon bg-hoop-neon/10 text-hoop-neon"
+              : "border-slate-600 bg-slate-800 text-slate-400 hover:border-slate-500"
             }
           `}
         >
-          {isDiaryLock ? (
-            <Lock className="w-4 h-4" />
-          ) : (
-            <Globe className="w-4 h-4" />
-          )}
-          {isDiaryLock ? "diary lock (logged-in only)" : "public post"}
+          {isDiaryLock ? <Lock className="w-4 h-4" /> : <Globe className="w-4 h-4" />}
+          {isDiaryLock ? "Locked (signed-in only)" : "Public Post"}
         </button>
-        <p className="font-body text-xs text-purple-400">
-          {isDiaryLock
-            ? "only signed-in readers can see this"
-            : "everyone can read this post"}
+        <p className="font-body text-xs text-slate-600">
+          {isDiaryLock ? "only signed-in readers can see this" : "everyone can read this post"}
         </p>
       </div>
 
       {/* Submit */}
       <div className="flex gap-3 justify-end">
-        <Button
-          type="submit"
-          size="lg"
-          disabled={isPending || uploading}
-          className="min-w-32"
-        >
-          {isPending ? (
-            <Loader2 className="w-4 h-4 animate-spin" />
-          ) : (
-            <Sparkles className="w-4 h-4" />
-          )}
-          {isPending
-            ? "saving..."
-            : post
-            ? "update post"
-            : "publish post"}
+        <Button type="submit" size="lg" disabled={isPending || uploading} className="min-w-32">
+          {isPending ? <Loader2 className="w-4 h-4 animate-spin" /> : <span>🏀</span>}
+          {isPending ? "Saving..." : post ? "Update Post" : "Publish"}
         </Button>
       </div>
     </form>
