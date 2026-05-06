@@ -38,8 +38,8 @@
   * { @apply border-border; }
 
   body {
-    @apply bg-[#050a0e] text-[#F8FAFC] font-body antialiased;
-    background-color: #050a0e;
+    @apply bg-[#0d1117] text-[#F8FAFC] font-body antialiased;
+    background-color: #0d1117;
     min-height: 100vh;
   }
 
