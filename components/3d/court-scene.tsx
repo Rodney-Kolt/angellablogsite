@@ -268,7 +268,6 @@ export function CourtScene({ posts, caps }: CourtSceneProps) {
         antialias: !caps.isMobile,
         alpha: false,
         powerPreference: caps.isMobile ? "low-power" : "high-performance",
-        shadowMap: { enabled: !caps.isMobile, type: THREE.PCFSoftShadowMap } as unknown as boolean,
       }}
       dpr={[1, caps.pixelRatio]}
       frameloop={caps.frameloop}
