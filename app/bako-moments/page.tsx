@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { Plus, Trophy } from "lucide-react";
 import type { Metadata } from "next";
+import type { Prisma } from "@prisma/client";
 
 export const metadata: Metadata = {
   title: "Bako Moments",
@@ -13,11 +14,16 @@ export const metadata: Metadata = {
 
 export const revalidate = 60;
 
+// Derive the exact type that includes the relatedPost relation
+export type BakoMomentWithPost = Prisma.BakoMomentGetPayload<{
+  include: { relatedPost: { select: { title: true; slug: true } } };
+}>;
+
 export default async function BakoMomentsPage() {
   const session = await auth();
   const isOwner = (session?.user as { isOwner?: boolean })?.isOwner;
 
-  let moments: Awaited<ReturnType<typeof prisma.bakoMoment.findMany>> = [];
+  let moments: BakoMomentWithPost[] = [];
   try {
     moments = await prisma.bakoMoment.findMany({
       orderBy: { createdAt: "desc" },
@@ -26,7 +32,7 @@ export default async function BakoMomentsPage() {
       },
     });
   } catch {
-    // Table not yet migrated
+    // Table not yet migrated — silently skip
   }
 
   return (

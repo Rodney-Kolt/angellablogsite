@@ -7,20 +7,10 @@ import { deleteBakoMoment } from "@/lib/bako-actions";
 import { Trash2, X, ExternalLink, Play } from "lucide-react";
 import Link from "next/link";
 import toast from "react-hot-toast";
+import type { BakoMomentWithPost } from "@/app/bako-moments/page";
 
+// Mirror the Prisma enum locally for the lookup map
 type MomentType = "GAME_WINNER" | "FUNNY_MISS" | "TRAINING_PR" | "CROWD_REACTION";
-type MediaType = "IMAGE" | "VIDEO";
-
-interface BakoMomentData {
-  id: string;
-  title: string;
-  description: string;
-  mediaUrl: string | null;
-  mediaType: MediaType;
-  momentType: MomentType;
-  createdAt: Date;
-  relatedPost: { title: string; slug: string } | null;
-}
 
 const MOMENT_META: Record<MomentType, { icon: string; label: string; color: string }> = {
   GAME_WINNER: { icon: "🏆", label: "Game Winner", color: "text-yellow-400" },
@@ -30,12 +20,12 @@ const MOMENT_META: Record<MomentType, { icon: string; label: string; color: stri
 };
 
 interface BakoGridProps {
-  moments: BakoMomentData[];
+  moments: BakoMomentWithPost[];
   isOwner: boolean;
 }
 
 export function BakoGrid({ moments, isOwner }: BakoGridProps) {
-  const [selected, setSelected] = useState<BakoMomentData | null>(null);
+  const [selected, setSelected] = useState<BakoMomentWithPost | null>(null);
   const [isPending, startTransition] = useTransition();
 
   const handleDelete = (id: string) => {
@@ -55,7 +45,7 @@ export function BakoGrid({ moments, isOwner }: BakoGridProps) {
       {/* Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
         {moments.map((moment) => {
-          const meta = MOMENT_META[moment.momentType];
+          const meta = MOMENT_META[moment.momentType as MomentType];
           return (
             <div
               key={moment.id}
@@ -175,9 +165,9 @@ export function BakoGrid({ moments, isOwner }: BakoGridProps) {
             <div className="p-6">
               {/* Type badge */}
               <div className="flex items-center gap-2 mb-3">
-                <span className="text-xl">{MOMENT_META[selected.momentType].icon}</span>
-                <span className={`font-body text-xs font-semibold uppercase tracking-wider ${MOMENT_META[selected.momentType].color}`}>
-                  {MOMENT_META[selected.momentType].label}
+                <span className="text-xl">{MOMENT_META[selected.momentType as MomentType].icon}</span>
+                <span className={`font-body text-xs font-semibold uppercase tracking-wider ${MOMENT_META[selected.momentType as MomentType].color}`}>
+                  {MOMENT_META[selected.momentType as MomentType].label}
                 </span>
                 <span className="font-body text-xs text-slate-700 ml-auto">
                   {formatDate(selected.createdAt)}
@@ -215,3 +205,4 @@ export function BakoGrid({ moments, isOwner }: BakoGridProps) {
     </>
   );
 }
+
