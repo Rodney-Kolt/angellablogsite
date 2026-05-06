@@ -52,7 +52,7 @@ export default async function RootLayout({
           rel="stylesheet"
         />
       </head>
-      <body className="min-h-screen antialiased bg-[#111111] text-slate-100">
+      <body className="min-h-screen antialiased bg-[#050a0e] text-slate-100">
         <SessionProvider session={session}>
           <Navbar />
           <main className="min-h-[calc(100vh-4rem)]">{children}</main>
