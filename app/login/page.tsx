@@ -10,37 +10,11 @@ import { useSearchParams } from "next/navigation";
 import toast from "react-hot-toast";
 
 function LoginForm() {
-  const [email, setEmail] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [sent, setSent] = useState(false);
   const searchParams = useSearchParams();
   const isVerify = searchParams.get("verify") === "1";
   const isError = searchParams.get("error") === "1";
 
-  const handleEmail = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!email) return;
-    setLoading(true);
-    try {
-      const res = await signIn("resend", { email, redirect: false, callbackUrl: "/" });
-      if (res?.error) {
-        // Common errors and friendly messages
-        if (res.error === "Configuration") {
-          toast.error("Email service not configured. Try GitHub sign-in.");
-        } else {
-          toast.error("Couldn't send link — check your email address.");
-        }
-      } else {
-        setSent(true);
-      }
-    } catch {
-      toast.error("Something went wrong. Please try again.");
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  if (sent || isVerify) {
+  if (isVerify) {
     return (
       <div className="text-center space-y-4">
         <div className="w-14 h-14 rounded-full bg-aqua-100 flex items-center justify-center mx-auto">
@@ -48,9 +22,9 @@ function LoginForm() {
         </div>
         <h2 className="font-heading text-2xl text-navy">check your email ✦</h2>
         <p className="font-body text-navy-muted text-sm">
-          we sent a magic link to <strong>{email || "your email"}</strong>. click it to sign in 🌊
+          we sent a magic link — click it to sign in 🌊
         </p>
-        <p className="font-body text-xs text-navy-faint">(check your spam folder if you don&apos;t see it)</p>
+        <p className="font-body text-xs text-navy-faint">(check your spam folder too)</p>
       </div>
     );
   }
@@ -63,27 +37,85 @@ function LoginForm() {
         </div>
       )}
 
-      <form onSubmit={handleEmail} className="space-y-4">
-        <div className="space-y-1.5">
-          <Label htmlFor="email">email address</Label>
-          <Input id="email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="you@example.com" required autoComplete="email" />
-        </div>
-        <Button type="submit" className="w-full" disabled={loading || !email}>
-          {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Mail className="w-4 h-4" />}
-          {loading ? "sending..." : "send magic link 🌊"}
-        </Button>
-      </form>
+      <EmailForm />
 
       <div className="relative">
-        <div className="absolute inset-0 flex items-center"><div className="w-full border-t-2 border-dashed border-aqua-200" /></div>
-        <div className="relative flex justify-center text-xs"><span className="bg-white px-3 font-body text-navy-faint">or</span></div>
+        <div className="absolute inset-0 flex items-center">
+          <div className="w-full border-t-2 border-dashed border-aqua-200" />
+        </div>
+        <div className="relative flex justify-center text-xs">
+          <span className="bg-white px-3 font-body text-navy-faint">or</span>
+        </div>
       </div>
 
       <Button variant="outline" className="w-full" onClick={() => signIn("github", { callbackUrl: "/" })}>
         <Github className="w-4 h-4" />
         continue with github
       </Button>
+
+      <p className="font-body text-xs text-navy-faint text-center leading-relaxed">
+        📬 Magic link only works for the blog owner&apos;s email.<br />
+        Everyone else: use GitHub to sign in.
+      </p>
     </div>
+  );
+}
+
+function EmailForm() {
+  const [email, setEmail] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [sent, setSent] = useState(false);
+
+  const handleEmail = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!email) return;
+    setLoading(true);
+    try {
+      const res = await signIn("resend", { email, redirect: false, callbackUrl: "/" });
+      if (res?.error) {
+        if (res.error === "Configuration") {
+          toast.error("Email service not configured — use GitHub instead.");
+        } else {
+          toast.error("Magic link only works for the owner's email. Use GitHub to sign in.");
+        }
+      } else {
+        setSent(true);
+      }
+    } catch {
+      toast.error("Something went wrong. Try GitHub sign-in.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  if (sent) {
+    return (
+      <div className="text-center space-y-3 p-4 rounded-xl bg-aqua-50 border-2 border-dashed border-aqua-200">
+        <CheckCircle className="w-6 h-6 text-aqua-500 mx-auto" />
+        <p className="font-body text-sm text-navy">magic link sent! check your inbox 🌊</p>
+      </div>
+    );
+  }
+
+  return (
+    <form onSubmit={handleEmail} className="space-y-3">
+      <div className="space-y-1.5">
+        <Label htmlFor="email">email address</Label>
+        <Input
+          id="email"
+          type="email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          placeholder="you@example.com"
+          required
+          autoComplete="email"
+        />
+      </div>
+      <Button type="submit" className="w-full" disabled={loading || !email}>
+        {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Mail className="w-4 h-4" />}
+        {loading ? "sending..." : "send magic link"}
+      </Button>
+    </form>
   );
 }
 
