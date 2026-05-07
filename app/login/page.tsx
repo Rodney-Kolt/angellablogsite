@@ -23,10 +23,21 @@ function LoginForm() {
     setLoading(true);
     try {
       const res = await signIn("resend", { email, redirect: false, callbackUrl: "/" });
-      if (res?.error) toast.error("Couldn't send link. Try again.");
-      else setSent(true);
-    } catch { toast.error("Something went wrong"); }
-    finally { setLoading(false); }
+      if (res?.error) {
+        // Common errors and friendly messages
+        if (res.error === "Configuration") {
+          toast.error("Email service not configured. Try GitHub sign-in.");
+        } else {
+          toast.error("Couldn't send link — check your email address.");
+        }
+      } else {
+        setSent(true);
+      }
+    } catch {
+      toast.error("Something went wrong. Please try again.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   if (sent || isVerify) {

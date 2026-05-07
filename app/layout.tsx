@@ -3,6 +3,7 @@ import "./globals.css";
 import { SessionProvider } from "next-auth/react";
 import { Navbar } from "@/components/layout/navbar";
 import { ToastProvider } from "@/components/ui/toast";
+import { LoadingScreenWrapper } from "@/components/loading-screen-wrapper";
 import { auth } from "@/auth";
 
 export const metadata: Metadata = {
@@ -46,6 +47,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
           </footer>
 
           <ToastProvider />
+          <LoadingScreenWrapper />
         </SessionProvider>
       </body>
     </html>

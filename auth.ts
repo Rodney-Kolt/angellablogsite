@@ -7,11 +7,13 @@ import { prisma } from "@/lib/prisma";
 export const { handlers, auth, signIn, signOut } = NextAuth({
   adapter: PrismaAdapter(prisma),
   providers: [
-    // Magic link via email (requires Resend API key)
+    // Magic link via Resend
+    // Requires AUTH_RESEND_KEY env var (Auth.js v5 naming)
     Resend({
-      from: process.env.EMAIL_FROM ?? "noreply@kirodaily.com",
+      apiKey: process.env.AUTH_RESEND_KEY,
+      from: process.env.EMAIL_FROM ?? "onboarding@resend.dev",
     }),
-    // GitHub OAuth (optional)
+    // GitHub OAuth (optional — set GITHUB_CLIENT_ID + GITHUB_CLIENT_SECRET)
     ...(process.env.GITHUB_CLIENT_ID && process.env.GITHUB_CLIENT_SECRET
       ? [
           GitHub({
@@ -30,7 +32,6 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     async session({ session, user }) {
       if (session.user) {
         session.user.id = user.id;
-        // Fetch isOwner from DB
         const dbUser = await prisma.user.findUnique({
           where: { id: user.id },
           select: { isOwner: true },
