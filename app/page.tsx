@@ -29,7 +29,7 @@ export default async function HomePage() {
           <span className="font-body text-sm text-navy-muted">welcome to my little corner 🌊</span>
         </div>
         <h1 className="font-heading text-6xl md:text-7xl text-navy mb-3">
-          Coastal Journal
+          Blackie
         </h1>
         <p className="font-body text-navy-muted text-base max-w-sm mx-auto leading-relaxed">
           a personal scrapbook of memories, thoughts, and little joys by the sea ✦

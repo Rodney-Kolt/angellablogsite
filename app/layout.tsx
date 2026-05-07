@@ -7,13 +7,13 @@ import { LoadingScreenWrapper } from "@/components/loading-screen-wrapper";
 import { auth } from "@/auth";
 
 export const metadata: Metadata = {
-  title: { default: "Coastal Journal ✦", template: "%s · Coastal Journal" },
+  title: { default: "Blackie ✦", template: "%s · Blackie" },
   description: "A personal digital scrapbook — memories, thoughts, and little joys by the sea.",
   keywords: ["blog", "journal", "scrapbook", "personal", "coastal"],
   openGraph: {
     type: "website",
-    siteName: "Coastal Journal",
-    title: "Coastal Journal ✦",
+    siteName: "Blackie",
+    title: "Blackie ✦",
     description: "A personal digital scrapbook — memories, thoughts, and little joys by the sea.",
   },
 };

@@ -20,7 +20,7 @@ export function Navbar() {
         <Link href="/" className="flex items-center gap-2 group" onClick={() => setOpen(false)}>
           <Waves className="w-5 h-5 text-aqua-400 group-hover:text-coral-400 transition-colors" />
           <span className="font-heading text-2xl text-navy group-hover:text-coral-400 transition-colors">
-            Coastal Journal
+            Blackie
           </span>
         </Link>
 

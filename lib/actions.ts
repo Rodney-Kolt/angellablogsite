@@ -58,6 +58,63 @@ export async function createPost(formData: FormData) {
   redirect(`/posts/${post.slug}`);
 }
 
+// Inline version — returns slug instead of redirecting (used by dashboard inline form)
+export async function createPostInline(formData: FormData) {
+  const session = await auth();
+  if (!session?.user?.id) return { error: "Unauthorized" };
+
+  const user = await prisma.user.findUnique({
+    where: { id: session.user.id },
+    select: { isOwner: true },
+  });
+  if (!user?.isOwner) return { error: "Only the blog owner can create posts" };
+
+  const title = formData.get("title") as string;
+  const content = formData.get("content") as string;
+  const mood = formData.get("mood") as string;
+  const moodEmoji = formData.get("moodEmoji") as string;
+  const song = formData.get("song") as string;
+  const songArtist = formData.get("songArtist") as string;
+  const tinyJoy = formData.get("tinyJoy") as string;
+  const isDiaryLock = formData.get("isDiaryLock") === "true";
+  const published = formData.get("published") !== "false"; // default true
+  const imageUrlsRaw = formData.get("imageUrls") as string;
+  const imageUrls = imageUrlsRaw ? JSON.parse(imageUrlsRaw) : [];
+
+  if (!title?.trim()) return { error: "Title is required" };
+  if (!content?.trim() || content === "<p></p>") return { error: "Content is required" };
+
+  const slug = generateSlug(title);
+  const plainText = stripHtml(content);
+  const excerpt = truncate(plainText, 160);
+
+  try {
+    const post = await prisma.post.create({
+      data: {
+        title: title.trim(),
+        content,
+        excerpt,
+        mood: mood || null,
+        moodEmoji: moodEmoji || null,
+        song: song || null,
+        songArtist: songArtist || null,
+        tinyJoy: tinyJoy || null,
+        isDiaryLock,
+        published,
+        imageUrls,
+        slug,
+        authorId: session.user.id,
+      },
+    });
+
+    revalidatePath("/");
+    revalidatePath("/dashboard");
+    return { success: true, slug: post.slug, published };
+  } catch (err) {
+    return { error: "Failed to save post. Please try again." };
+  }
+}
+
 export async function updatePost(postId: string, formData: FormData) {
   const session = await auth();
   if (!session?.user?.id) throw new Error("Unauthorized");
