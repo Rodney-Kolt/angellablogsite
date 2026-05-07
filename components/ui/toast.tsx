@@ -1,5 +1,4 @@
 "use client";
-
 import { Toaster } from "react-hot-toast";
 
 export function ToastProvider() {
@@ -9,27 +8,16 @@ export function ToastProvider() {
       toastOptions={{
         duration: 3000,
         style: {
-          background: "#1e293b",
-          border: "1px solid #F97316",
-          borderRadius: "4px",
-          color: "#F8FAFC",
+          background: "#ffffff",
+          border: "1px solid #e2e8f0",
+          borderRadius: "10px",
+          color: "#1a202c",
           fontFamily: "var(--font-inter)",
-          fontSize: "13px",
-          fontWeight: "500",
-          boxShadow: "0 0 20px rgba(249,115,22,0.2)",
+          fontSize: "14px",
+          boxShadow: "0 4px 12px rgba(0,0,0,0.08)",
         },
-        success: {
-          iconTheme: {
-            primary: "#F97316",
-            secondary: "#1e293b",
-          },
-        },
-        error: {
-          iconTheme: {
-            primary: "#ef4444",
-            secondary: "#1e293b",
-          },
-        },
+        success: { iconTheme: { primary: "#2563eb", secondary: "#fff" } },
+        error:   { iconTheme: { primary: "#ef4444", secondary: "#fff" } },
       }}
     />
   );

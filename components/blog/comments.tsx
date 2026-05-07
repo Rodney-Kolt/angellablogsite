@@ -6,21 +6,11 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { formatDate, getInitials } from "@/lib/utils";
-import { Trash2, Send, MessageSquare } from "lucide-react";
+import { Trash2, Send, MessageCircle } from "lucide-react";
 import toast from "react-hot-toast";
 
-interface CommentUser {
-  id: string;
-  name: string | null;
-  image: string | null;
-}
-
-interface CommentData {
-  id: string;
-  content: string;
-  createdAt: Date;
-  user: CommentUser;
-}
+interface CommentUser { id: string; name: string | null; image: string | null }
+interface CommentData { id: string; content: string; createdAt: Date; user: CommentUser }
 
 interface CommentsProps {
   postId: string;
@@ -30,153 +20,95 @@ interface CommentsProps {
   isLoggedIn: boolean;
 }
 
-export function Comments({
-  postId,
-  comments: initialComments,
-  currentUserId,
-  isOwner,
-  isLoggedIn,
-}: CommentsProps) {
-  const [comments, setComments] = useState(initialComments);
+export function Comments({ postId, comments: init, currentUserId, isOwner, isLoggedIn }: CommentsProps) {
+  const [comments, setComments] = useState(init);
   const [text, setText] = useState("");
   const [isPending, startTransition] = useTransition();
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!text.trim()) return;
-    if (!isLoggedIn) {
-      toast("sign in to drop a comment 🏀");
-      return;
-    }
-
+    if (!isLoggedIn) { toast("Sign in to comment"); return; }
     startTransition(async () => {
-      const result = await addComment(postId, text);
-      if (result?.error) {
-        toast.error(result.error);
-      } else {
-        toast.success("comment dropped! 🏀");
-        setText("");
-      }
+      const res = await addComment(postId, text);
+      if (res?.error) toast.error(res.error);
+      else { toast.success("Comment added"); setText(""); }
     });
   };
 
-  const handleDelete = (commentId: string) => {
+  const handleDelete = (id: string) => {
     startTransition(async () => {
       try {
-        await deleteComment(commentId);
-        setComments((prev) => prev.filter((c) => c.id !== commentId));
-        toast.success("comment removed");
-      } catch {
-        toast.error("couldn't delete that comment");
-      }
+        await deleteComment(id);
+        setComments((p) => p.filter((c) => c.id !== id));
+        toast.success("Deleted");
+      } catch { toast.error("Could not delete"); }
     });
   };
 
   return (
-    <section className="mt-10">
-      {/* Header */}
-      <div className="flex items-center gap-3 mb-6">
-        <MessageSquare className="w-5 h-5 text-hoop-orange" />
-        <h3 className="font-heading text-xl text-white tracking-widest">
-          LOCKER ROOM
-        </h3>
-        <span className="font-body text-xs text-slate-600 uppercase tracking-wider">
-          ({comments.length} comments)
-        </span>
-        <div className="flex-1 h-px bg-slate-800" />
-      </div>
+    <section>
+      <h3 className="font-serif text-xl text-ink mb-6 flex items-center gap-2">
+        <MessageCircle className="w-5 h-5 text-blue-400" />
+        {comments.length} {comments.length === 1 ? "comment" : "comments"}
+      </h3>
 
-      {/* Comment form */}
+      {/* Form */}
       {isLoggedIn ? (
         <form onSubmit={handleSubmit} className="mb-8">
-          {/* Chalkboard textarea */}
-          <div className="chalkboard rounded-sm p-4 mb-2">
-            <Textarea
-              value={text}
-              onChange={(e) => setText(e.target.value)}
-              placeholder="drop your thoughts on the board..."
-              className="border-none bg-transparent focus-visible:ring-0 focus-visible:ring-offset-0 text-slate-200 placeholder:text-slate-600 resize-none min-h-[80px] font-body text-sm"
-              maxLength={1000}
-            />
-          </div>
+          <Textarea
+            value={text}
+            onChange={(e) => setText(e.target.value)}
+            placeholder="Share your thoughts…"
+            className="mb-3"
+            maxLength={1000}
+            rows={3}
+          />
           <div className="flex justify-between items-center">
-            <span className="font-body text-xs text-slate-600">
-              {text.length}/1000
-            </span>
-            <Button
-              type="submit"
-              size="sm"
-              disabled={isPending || !text.trim()}
-            >
+            <span className="text-xs text-slate-400">{text.length}/1000</span>
+            <Button type="submit" size="sm" disabled={isPending || !text.trim()}>
               <Send className="w-3.5 h-3.5" />
-              Drop It
+              Post comment
             </Button>
           </div>
         </form>
       ) : (
-        <div className="mb-8 p-4 rounded-sm border border-dashed border-slate-700 text-center chalkboard">
-          <p className="font-body text-sm text-slate-500">
-            <a href="/login" className="text-hoop-orange hover:underline font-semibold">
-              Sign in
-            </a>{" "}
-            to drop a comment in the locker room 🏀
+        <div className="mb-8 p-4 rounded-xl border border-slate-200 bg-blue-50 text-center">
+          <p className="text-sm text-slate-500">
+            <Link href="/login" className="text-blue-600 hover:underline font-medium">Sign in</Link> to leave a comment.
           </p>
         </div>
       )}
 
-      {/* Comments list */}
-      <div className="space-y-3">
+      {/* List */}
+      <div className="space-y-5">
         {comments.length === 0 && (
-          <div className="text-center py-10 chalkboard rounded-sm">
-            <p className="font-heading text-slate-600 text-lg tracking-widest">
-              BOARD IS EMPTY
-            </p>
-            <p className="font-body text-xs text-slate-700 mt-1">
-              be the first to write on the board
-            </p>
-          </div>
+          <p className="text-center text-slate-400 py-8 text-sm">No comments yet. Be the first!</p>
         )}
-
-        {comments.map((comment) => (
-          <div
-            key={comment.id}
-            className="chalkboard rounded-sm p-4"
-          >
-            <div className="flex items-start gap-3">
-              <Avatar className="w-8 h-8 flex-shrink-0">
-                <AvatarImage src={comment.user.image ?? ""} />
-                <AvatarFallback className="text-xs">
-                  {getInitials(comment.user.name ?? comment.user.id)}
-                </AvatarFallback>
-              </Avatar>
-              <div className="flex-1 min-w-0">
-                <div className="flex items-center gap-2 mb-1">
-                  <span className="font-body text-xs font-semibold text-hoop-orange uppercase tracking-wider">
-                    {comment.user.name ?? "anonymous"}
-                  </span>
-                  <span className="font-body text-xs text-slate-600">
-                    {formatDate(comment.createdAt)}
-                  </span>
-                </div>
-                <p className="font-body text-sm text-slate-300 leading-relaxed whitespace-pre-wrap">
-                  {comment.content}
-                </p>
+        {comments.map((c) => (
+          <div key={c.id} className="flex gap-3">
+            <Avatar className="w-8 h-8 flex-shrink-0">
+              <AvatarImage src={c.user.image ?? ""} />
+              <AvatarFallback className="text-xs">{getInitials(c.user.name ?? c.user.id)}</AvatarFallback>
+            </Avatar>
+            <div className="flex-1 min-w-0">
+              <div className="flex items-center gap-2 mb-1">
+                <span className="text-sm font-medium text-ink">{c.user.name ?? "Anonymous"}</span>
+                <span className="text-xs text-slate-400">{formatDate(c.createdAt)}</span>
               </div>
-
-              {(currentUserId === comment.user.id || isOwner) && (
-                <button
-                  onClick={() => handleDelete(comment.id)}
-                  disabled={isPending}
-                  className="text-slate-700 hover:text-red-500 transition-colors flex-shrink-0"
-                  aria-label="Delete comment"
-                >
-                  <Trash2 className="w-3.5 h-3.5" />
-                </button>
-              )}
+              <p className="text-sm text-slate-600 leading-relaxed whitespace-pre-wrap">{c.content}</p>
             </div>
+            {(currentUserId === c.user.id || isOwner) && (
+              <button onClick={() => handleDelete(c.id)} disabled={isPending} className="text-slate-300 hover:text-red-400 transition-colors flex-shrink-0 mt-1">
+                <Trash2 className="w-3.5 h-3.5" />
+              </button>
+            )}
           </div>
         ))}
       </div>
     </section>
   );
 }
+
+// Need Link import
+import Link from "next/link";

@@ -6,74 +6,43 @@ import { ToastProvider } from "@/components/ui/toast";
 import { auth } from "@/auth";
 
 export const metadata: Metadata = {
-  title: {
-    default: "kiro daily 🏀",
-    template: "%s | kiro daily",
-  },
-  description:
-    "a basketball player's personal digital court — raw thoughts, game recaps, and daily grind",
-  keywords: ["blog", "basketball", "hoops", "journal", "personal"],
-  authors: [{ name: "Kiro" }],
+  title: { default: "Bako", template: "%s · Bako" },
+  description: "A thoughtful personal blog — ideas, stories, and reflections.",
+  keywords: ["blog", "writing", "journal", "personal"],
   openGraph: {
     type: "website",
     locale: "en_US",
-    url: process.env.NEXTAUTH_URL ?? "https://kirodaily.vercel.app",
-    siteName: "kiro daily",
-    title: "kiro daily 🏀",
-    description:
-      "a basketball player's personal digital court — raw thoughts, game recaps, and daily grind",
-  },
-  twitter: {
-    card: "summary_large_image",
-    title: "kiro daily 🏀",
-    description:
-      "a basketball player's personal digital court — raw thoughts, game recaps, and daily grind",
+    url: process.env.NEXTAUTH_URL ?? "https://bako.vercel.app",
+    siteName: "Bako",
+    title: "Bako",
+    description: "A thoughtful personal blog — ideas, stories, and reflections.",
   },
 };
 
-export default async function RootLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default async function RootLayout({ children }: { children: React.ReactNode }) {
   const session = await auth();
 
   return (
-    <html lang="en" suppressHydrationWarning className="dark">
+    <html lang="en" suppressHydrationWarning>
       <head>
         <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link
-          rel="preconnect"
-          href="https://fonts.gstatic.com"
-          crossOrigin="anonymous"
-        />
-        <link
-          href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Poppins:wght@400;500;600;700;800;900&family=Inter:wght@300;400;500;600;700&display=swap"
+          href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=Inter:wght@300;400;500;600;700&display=swap"
           rel="stylesheet"
         />
       </head>
-      <body className="min-h-screen antialiased bg-[#0d1117] text-slate-100">
+      <body className="min-h-screen bg-[#F8FAFC] text-ink antialiased">
         <SessionProvider session={session}>
           <Navbar />
           <main className="min-h-[calc(100vh-4rem)]">{children}</main>
 
-          {/* Footer */}
-          <footer className="border-t border-slate-800 bg-[#0d0d0d] py-8 mt-16">
+          <footer className="border-t border-slate-200 bg-white py-10 mt-20">
             <div className="container mx-auto px-4 text-center">
-              <div className="flex items-center justify-center gap-2 mb-2">
-                <span className="text-2xl">🏀</span>
-                <span className="font-heading text-xl text-hoop-orange tracking-widest">
-                  KIRO DAILY
-                </span>
-              </div>
-              <p className="font-body text-xs text-slate-500 mt-1">
-                stay on the court · {new Date().getFullYear()}
+              <p className="font-serif text-lg text-blue-600 mb-1">Bako</p>
+              <p className="text-sm text-slate-400">
+                A place for thoughts worth keeping · {new Date().getFullYear()}
               </p>
-              <div className="mt-3 flex items-center justify-center gap-1">
-                <div className="h-px w-12 bg-gradient-to-r from-transparent to-hoop-orange" />
-                <span className="text-hoop-orange text-xs">●</span>
-                <div className="h-px w-12 bg-gradient-to-l from-transparent to-hoop-orange" />
-              </div>
             </div>
           </footer>
 

@@ -4,7 +4,7 @@ import Link from "next/link";
 import { Lock } from "lucide-react";
 import type { Metadata } from "next";
 
-export const metadata: Metadata = { title: "archive" };
+export const metadata: Metadata = { title: "Archive" };
 export const revalidate = 60;
 
 export default async function ArchivePage() {
@@ -12,85 +12,41 @@ export default async function ArchivePage() {
   const isLoggedIn = !!session?.user;
 
   const posts = await prisma.post.findMany({
-    where: {
-      published: true,
-      ...(isLoggedIn ? {} : { isDiaryLock: false }),
-    },
-    select: {
-      id: true, title: true, slug: true,
-      moodEmoji: true, isDiaryLock: true, createdAt: true,
-    },
+    where: { published: true, ...(isLoggedIn ? {} : { isDiaryLock: false }) },
+    select: { id: true, title: true, slug: true, isDiaryLock: true, createdAt: true },
     orderBy: { createdAt: "desc" },
   });
 
-  // Group by year/month
   const grouped: Record<string, typeof posts> = {};
   for (const post of posts) {
-    const key = new Intl.DateTimeFormat("en-US", {
-      year: "numeric",
-      month: "long",
-    }).format(new Date(post.createdAt));
+    const key = new Intl.DateTimeFormat("en-US", { year: "numeric", month: "long" }).format(new Date(post.createdAt));
     if (!grouped[key]) grouped[key] = [];
     grouped[key].push(post);
   }
 
   return (
-    <div className="container mx-auto px-4 py-10 max-w-2xl">
-      {/* Header */}
-      <div className="flex items-center gap-3 mb-2">
-        <span className="text-3xl">📋</span>
-        <h1 className="font-heading text-4xl text-white tracking-widest">
-          ARCHIVE
-        </h1>
-      </div>
-      <p className="font-body text-xs text-slate-600 mb-8 uppercase tracking-wider">
-        {posts.length} entries on the board
-      </p>
-
-      {/* Court line */}
-      <div className="h-px bg-gradient-to-r from-hoop-orange via-hoop-orange/50 to-transparent mb-8" />
+    <div className="container mx-auto px-4 py-12 max-w-2xl">
+      <h1 className="font-serif text-4xl font-semibold text-ink mb-2">Archive</h1>
+      <p className="text-slate-500 text-sm mb-10">{posts.length} posts</p>
 
       {Object.entries(grouped).length === 0 ? (
-        <div className="text-center py-20">
-          <div className="text-6xl mb-4 bounce-ball inline-block">🏀</div>
-          <p className="font-heading text-2xl text-slate-600 tracking-widest">
-            NOTHING HERE YET
-          </p>
-        </div>
+        <p className="text-slate-400 text-center py-16">Nothing here yet.</p>
       ) : (
         <div className="space-y-10">
           {Object.entries(grouped).map(([month, monthPosts]) => (
             <div key={month}>
-              <h2 className="font-heading text-lg text-hoop-orange mb-4 flex items-center gap-2 tracking-widest">
-                <span className="w-2 h-2 bg-hoop-orange inline-block" />
-                {month.toUpperCase()}
-              </h2>
-              <div className="space-y-1 pl-4 border-l-2 border-slate-800">
+              <h2 className="font-serif text-lg text-blue-600 mb-4">{month}</h2>
+              <div className="space-y-1 border-l-2 border-slate-200 pl-5">
                 {monthPosts.map((post) => (
-                  <Link
-                    key={post.id}
-                    href={`/posts/${post.slug}`}
-                    className="flex items-center gap-3 p-3 rounded-sm hover:bg-slate-800/50 transition-colors group"
-                  >
-                    <span className="text-lg flex-shrink-0">
-                      {post.moodEmoji ?? "🏀"}
+                  <Link key={post.id} href={`/posts/${post.slug}`}
+                    className="flex items-center gap-2 py-2 group">
+                    <span className="flex-1 text-sm text-slate-700 group-hover:text-blue-600 transition-colors">
+                      {post.title}
                     </span>
-                    <div className="flex-1 min-w-0">
-                      <span className="font-body text-sm font-medium text-slate-400 group-hover:text-hoop-orange transition-colors">
-                        {post.title}
-                      </span>
-                    </div>
-                    <div className="flex items-center gap-2 flex-shrink-0">
-                      {post.isDiaryLock && (
-                        <Lock className="w-3 h-3 text-hoop-neon" />
-                      )}
-                      <span className="font-body text-xs text-slate-700">
-                        {new Intl.DateTimeFormat("en-US", {
-                          month: "short",
-                          day: "numeric",
-                        }).format(new Date(post.createdAt))}
-                      </span>
-                    </div>
+                    {post.isDiaryLock && <Lock className="w-3 h-3 text-blue-400 flex-shrink-0" />}
+                    <span className="text-xs text-slate-400 flex-shrink-0">
+                      {new Intl.DateTimeFormat("en-US", { month: "short", day: "numeric" }).format(new Date(post.createdAt))}
+                    </span>
                   </Link>
                 ))}
               </div>

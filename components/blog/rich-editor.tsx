@@ -34,13 +34,7 @@ interface ToolbarButtonProps {
   children: React.ReactNode;
 }
 
-function ToolbarButton({
-  onClick,
-  isActive,
-  disabled,
-  title,
-  children,
-}: ToolbarButtonProps) {
+function ToolbarButton({ onClick, isActive, disabled, title, children }: ToolbarButtonProps) {
   return (
     <button
       type="button"
@@ -48,8 +42,8 @@ function ToolbarButton({
       disabled={disabled}
       title={title}
       className={cn(
-        "p-1.5 rounded-sm transition-all duration-150 hover:bg-slate-700",
-        isActive ? "bg-slate-700 text-hoop-orange" : "text-slate-400",
+        "p-1.5 rounded-md transition-all duration-150 hover:bg-blue-50",
+        isActive ? "bg-blue-100 text-blue-700" : "text-slate-500",
         disabled && "opacity-40 cursor-not-allowed"
       )}
     >
@@ -75,7 +69,7 @@ export function RichEditor({ content, onChange, placeholder }: RichEditorProps) 
     editorProps: {
       attributes: {
         class:
-          "prose prose-invert max-w-none min-h-[300px] p-4 focus:outline-none font-body text-slate-200",
+          "prose max-w-none min-h-[400px] p-4 focus:outline-none font-sans text-ink",
       },
     },
   });
@@ -90,9 +84,9 @@ export function RichEditor({ content, onChange, placeholder }: RichEditorProps) 
   };
 
   return (
-    <div className="border border-slate-700 rounded-sm overflow-hidden bg-slate-900 focus-within:border-hoop-orange transition-colors">
+    <div className="border border-slate-300 rounded-xl overflow-hidden bg-white focus-within:border-blue-400 focus-within:ring-2 focus-within:ring-blue-100 transition-all">
       {/* Toolbar */}
-      <div className="flex flex-wrap items-center gap-1 p-2 border-b border-slate-700 bg-slate-800/50">
+      <div className="flex flex-wrap items-center gap-1 p-2 border-b border-slate-200 bg-slate-50">
         <ToolbarButton
           onClick={() => editor.chain().focus().toggleBold().run()}
           isActive={editor.isActive("bold")}
@@ -108,7 +102,7 @@ export function RichEditor({ content, onChange, placeholder }: RichEditorProps) 
           <Italic className="w-4 h-4" />
         </ToolbarButton>
 
-        <div className="w-px h-5 bg-slate-700 mx-1" />
+        <div className="w-px h-5 bg-slate-200 mx-1" />
 
         <ToolbarButton
           onClick={() =>
@@ -129,7 +123,7 @@ export function RichEditor({ content, onChange, placeholder }: RichEditorProps) 
           <Heading3 className="w-4 h-4" />
         </ToolbarButton>
 
-        <div className="w-px h-5 bg-slate-700 mx-1" />
+        <div className="w-px h-5 bg-slate-200 mx-1" />
 
         <ToolbarButton
           onClick={() => editor.chain().focus().toggleBulletList().run()}
@@ -153,7 +147,7 @@ export function RichEditor({ content, onChange, placeholder }: RichEditorProps) 
           <Quote className="w-4 h-4" />
         </ToolbarButton>
 
-        <div className="w-px h-5 bg-slate-700 mx-1" />
+        <div className="w-px h-5 bg-slate-200 mx-1" />
 
         <ToolbarButton onClick={addLink} isActive={editor.isActive("link")} title="Add link">
           <LinkIcon className="w-4 h-4" />
@@ -165,7 +159,7 @@ export function RichEditor({ content, onChange, placeholder }: RichEditorProps) 
           <Minus className="w-4 h-4" />
         </ToolbarButton>
 
-        <div className="w-px h-5 bg-slate-700 mx-1" />
+        <div className="w-px h-5 bg-slate-200 mx-1" />
 
         <ToolbarButton
           onClick={() => editor.chain().focus().undo().run()}
@@ -188,4 +182,5 @@ export function RichEditor({ content, onChange, placeholder }: RichEditorProps) 
     </div>
   );
 }
+
 

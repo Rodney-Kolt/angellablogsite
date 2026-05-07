@@ -1,129 +1,71 @@
 "use client";
 
-import { useState, useTransition, useRef, useEffect } from "react";
+import { useState, useTransition } from "react";
 import { toggleReaction } from "@/lib/actions";
 import type { ReactionType } from "@/lib/utils";
 import toast from "react-hot-toast";
 
-interface ReactionCounts { same: number; feltThat: number; hugs: number }
-interface UserReactions { same: boolean; feltThat: boolean; hugs: boolean }
+const LABELS: Record<ReactionType, { emoji: string; label: string }> = {
+  same:     { emoji: "👏", label: "Relate" },
+  feltThat: { emoji: "💙", label: "Love this" },
+  hugs:     { emoji: "🤗", label: "Warm" },
+};
 
 interface ReactionsProps {
   postId: string;
-  counts: ReactionCounts;
-  userReactions: UserReactions;
+  counts: Record<ReactionType, number>;
+  userReactions: Record<ReactionType, boolean>;
   isLoggedIn: boolean;
 }
 
-const BASKETBALL_LABELS: Record<ReactionType, { emoji: string; label: string }> = {
-  same:     { emoji: "🏀", label: "Swish" },
-  feltThat: { emoji: "🔥", label: "Heat Check" },
-  hugs:     { emoji: "🧱", label: "Brick" },
-};
-
 export function Reactions({ postId, counts, userReactions, isLoggedIn }: ReactionsProps) {
   const [localCounts, setLocalCounts] = useState(counts);
-  const [localUserReactions, setLocalUserReactions] = useState(userReactions);
+  const [localActive, setLocalActive] = useState(userReactions);
   const [isPending, startTransition] = useTransition();
-  const [shakingHoop, setShakingHoop] = useState(false);
-  const [isMobile, setIsMobile] = useState(false);
 
-  useEffect(() => {
-    setIsMobile(window.matchMedia("(max-width: 768px)").matches);
-  }, []);
-
-  const handleReaction = (type: ReactionType) => {
-    if (!isLoggedIn) {
-      toast("sign in to react 🏀", { icon: "🔒" });
-      return;
-    }
-
-    // Swish-specific effects
-    if (type === "same") {
-      if (isMobile) {
-        // Haptic on mobile (only after user interaction — this IS a click)
-        if ("vibrate" in navigator) navigator.vibrate(150);
-      } else {
-        // Hoop shake on desktop
-        setShakingHoop(true);
-        setTimeout(() => setShakingHoop(false), 600);
-      }
-    }
-
-    const wasActive = localUserReactions[type];
-    setLocalUserReactions((prev) => ({ ...prev, [type]: !wasActive }));
-    setLocalCounts((prev) => ({
-      ...prev,
-      [type]: wasActive ? prev[type] - 1 : prev[type] + 1,
-    }));
-
+  const handle = (type: ReactionType) => {
+    if (!isLoggedIn) { toast("Sign in to react"); return; }
+    const was = localActive[type];
+    setLocalActive((p) => ({ ...p, [type]: !was }));
+    setLocalCounts((p) => ({ ...p, [type]: was ? p[type] - 1 : p[type] + 1 }));
     startTransition(async () => {
-      const result = await toggleReaction(postId, type);
-      if (result?.error) {
-        setLocalUserReactions((prev) => ({ ...prev, [type]: wasActive }));
-        setLocalCounts((prev) => ({
-          ...prev,
-          [type]: wasActive ? prev[type] + 1 : prev[type] - 1,
-        }));
-        toast.error(result.error);
+      const res = await toggleReaction(postId, type);
+      if (res?.error) {
+        setLocalActive((p) => ({ ...p, [type]: was }));
+        setLocalCounts((p) => ({ ...p, [type]: was ? p[type] + 1 : p[type] - 1 }));
+        toast.error(res.error);
       }
     });
   };
 
   return (
-    <div className="my-6">
-      <div className="flex items-center gap-3 mb-4">
-        <span className="font-heading text-sm text-slate-400 uppercase tracking-widest">
-          Vibe Check
-        </span>
-        <div className="flex-1 h-px bg-slate-800" />
-        {/* Hoop icon — shakes on desktop Swish */}
-        <span
-          className={`text-xl select-none ${shakingHoop ? "hoop-shake" : ""}`}
-          aria-hidden="true"
-        >
-          🏀
-        </span>
-      </div>
-
-      <div className="flex flex-wrap gap-3">
-        {(Object.keys(BASKETBALL_LABELS) as ReactionType[]).map((type) => {
-          const { emoji, label } = BASKETBALL_LABELS[type];
-          const isActive = localUserReactions[type];
-          const count = localCounts[type];
-
-          return (
-            <button
-              key={type}
-              onClick={() => handleReaction(type)}
-              disabled={isPending}
-              className={`
-                flex items-center gap-2 px-4 py-2 rounded-sm border font-body text-xs font-semibold uppercase tracking-wider
-                transition-all duration-200 hover:scale-105 active:scale-95
-                disabled:opacity-50 disabled:cursor-not-allowed
-                ${isActive
-                  ? type === "same"
-                    ? "border-hoop-orange bg-hoop-orange/20 text-hoop-orange shadow-orange-sm"
-                    : type === "feltThat"
-                    ? "border-red-500 bg-red-500/20 text-red-400"
-                    : "border-slate-500 bg-slate-700 text-slate-300"
-                  : "border-slate-700 bg-slate-900 text-slate-500 hover:border-hoop-orange/50 hover:text-slate-300"
-                }
-              `}
-              aria-label={`React with ${label}`}
-              aria-pressed={isActive}
-            >
-              <span className="text-base">{emoji}</span>
-              <span>{label}</span>
-              {count > 0 && (
-                <span className={`text-xs font-bold px-1.5 py-0.5 rounded-sm ${isActive ? "bg-white/10" : "bg-slate-800"}`}>
-                  {count}
-                </span>
-              )}
-            </button>
-          );
-        })}
-      </div>
+    <div className="flex flex-wrap gap-3 my-6">
+      <p className="w-full text-sm text-slate-400 mb-1">Did this resonate?</p>
+      {(Object.keys(LABELS) as ReactionType[]).map((type) => {
+        const { emoji, label } = LABELS[type];
+        const active = localActive[type];
+        const count = localCounts[type];
+        return (
+          <button
+            key={type}
+            onClick={() => handle(type)}
+            disabled={isPending}
+            className={`flex items-center gap-2 px-4 py-2 rounded-full border text-sm font-medium transition-all duration-150 hover:scale-105 active:scale-95 disabled:opacity-50 ${
+              active
+                ? "border-blue-400 bg-blue-50 text-blue-700"
+                : "border-slate-200 bg-white text-slate-600 hover:border-blue-300 hover:bg-blue-50"
+            }`}
+          >
+            <span>{emoji}</span>
+            <span>{label}</span>
+            {count > 0 && (
+              <span className={`text-xs px-1.5 py-0.5 rounded-full ${active ? "bg-blue-100 text-blue-600" : "bg-slate-100 text-slate-500"}`}>
+                {count}
+              </span>
+            )}
+          </button>
+        );
+      })}
     </div>
   );
 }

@@ -4,37 +4,25 @@ import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "@/lib/utils";
 
 const buttonVariants = cva(
-  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-sm text-sm font-body font-semibold uppercase tracking-wider transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-hoop-orange focus-visible:ring-offset-2 focus-visible:ring-offset-[#111] disabled:pointer-events-none disabled:opacity-40 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0",
+  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-lg text-sm font-medium font-sans transition-all duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0",
   {
     variants: {
       variant: {
-        default:
-          "bg-hoop-orange text-white hover:bg-orange-600 hover:scale-105 active:scale-95 btn-orange",
-        destructive:
-          "bg-red-600 text-white hover:bg-red-700 hover:scale-105",
-        outline:
-          "border border-hoop-orange bg-transparent text-hoop-orange hover:bg-hoop-orange/10 hover:scale-105",
-        secondary:
-          "bg-slate-800 text-slate-200 border border-slate-700 hover:bg-slate-700 hover:scale-105",
-        ghost:
-          "text-slate-400 hover:bg-slate-800 hover:text-white hover:scale-105",
-        link: "text-hoop-orange underline-offset-4 hover:underline",
-        neon:
-          "bg-transparent border border-hoop-neon text-hoop-neon btn-neon hover:bg-hoop-neon/10 active:scale-95",
-        girly: // keep alias so existing code doesn't break
-          "bg-hoop-orange text-white hover:bg-orange-600 hover:scale-105 active:scale-95 btn-orange",
+        default:     "bg-blue-600 text-white hover:bg-blue-700 active:bg-blue-800 shadow-sm",
+        destructive: "bg-red-500 text-white hover:bg-red-600",
+        outline:     "border border-blue-200 bg-white text-blue-700 hover:bg-blue-50 hover:border-blue-300",
+        secondary:   "bg-blue-50 text-blue-700 hover:bg-blue-100",
+        ghost:       "text-ink-light hover:bg-slate-100 hover:text-ink",
+        link:        "text-blue-600 underline-offset-4 hover:underline p-0 h-auto",
       },
       size: {
-        default: "h-10 px-6 py-2",
-        sm: "h-8 px-4 text-xs",
-        lg: "h-12 px-8 text-base",
-        icon: "h-10 w-10",
+        default: "h-10 px-5 py-2",
+        sm:      "h-8 px-3 text-xs",
+        lg:      "h-11 px-7 text-base",
+        icon:    "h-10 w-10",
       },
     },
-    defaultVariants: {
-      variant: "default",
-      size: "default",
-    },
+    defaultVariants: { variant: "default", size: "default" },
   }
 );
 
@@ -48,11 +36,7 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
   ({ className, variant, size, asChild = false, ...props }, ref) => {
     const Comp = asChild ? Slot : "button";
     return (
-      <Comp
-        className={cn(buttonVariants({ variant, size, className }))}
-        ref={ref}
-        {...props}
-      />
+      <Comp className={cn(buttonVariants({ variant, size, className }))} ref={ref} {...props} />
     );
   }
 );
