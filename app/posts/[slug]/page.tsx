@@ -6,8 +6,9 @@ import { Comments } from "@/components/blog/comments";
 import { Reactions } from "@/components/blog/reactions";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
-import { Lock, Edit, ArrowLeft, Clock, Share2 } from "lucide-react";
+import { Lock, Edit, ArrowLeft, Clock, Music, Star, Smile } from "lucide-react";
 import Link from "next/link";
+import Image from "next/image";
 import type { Metadata } from "next";
 
 interface PageProps { params: { slug: string } }
@@ -57,10 +58,10 @@ export default async function PostPage({ params }: PageProps) {
   if (post.isDiaryLock && !isLoggedIn) {
     return (
       <div className="container mx-auto px-4 py-24 text-center max-w-md">
-        <Lock className="w-10 h-10 text-blue-300 mx-auto mb-4" />
-        <h1 className="font-serif text-2xl text-ink mb-3">Members only</h1>
-        <p className="text-slate-500 mb-6">Sign in to read this post.</p>
-        <Button asChild><Link href="/login">Sign in</Link></Button>
+        <div className="text-5xl mb-5 animate-float">🔒</div>
+        <h1 className="font-heading text-3xl text-navy mb-3">members only ✦</h1>
+        <p className="font-body text-navy-muted mb-6">sign in to unlock this memory 🌊</p>
+        <Button asChild variant="coral"><Link href="/login">sign in</Link></Button>
       </div>
     );
   }
@@ -81,87 +82,112 @@ export default async function PostPage({ params }: PageProps) {
   return (
     <div className="container mx-auto px-4 py-10 max-w-3xl">
       {/* Back */}
-      <Link href="/" className="inline-flex items-center gap-1.5 text-sm text-slate-400 hover:text-blue-600 transition-colors mb-8 group">
+      <Link href="/" className="inline-flex items-center gap-1.5 font-body text-sm text-navy-muted hover:text-coral-400 transition-colors mb-8 group">
         <ArrowLeft className="w-4 h-4 group-hover:-translate-x-0.5 transition-transform" />
-        Back
+        back to memories
       </Link>
 
       <article>
         {/* Header */}
-        <header className="mb-10">
+        <header className="mb-8">
           {post.isDiaryLock && (
-            <div className="flex items-center gap-1.5 text-xs text-blue-500 mb-3">
+            <div className="flex items-center gap-1.5 text-xs text-aqua-500 mb-3">
               <Lock className="w-3.5 h-3.5" />
-              <span>Members only</span>
+              <span className="font-body">members only</span>
             </div>
           )}
 
-          <h1 className="font-serif text-4xl md:text-5xl font-semibold text-ink leading-tight mb-5">
+          <h1 className="font-heading text-4xl md:text-5xl text-navy mb-4 leading-tight">
+            {post.moodEmoji && <span className="mr-2">{post.moodEmoji}</span>}
             {post.title}
           </h1>
 
-          <div className="flex items-center justify-between flex-wrap gap-4">
-            <div className="flex items-center gap-3 text-sm text-slate-500">
-              <span className="font-medium text-ink">{post.author.name ?? "Author"}</span>
-              <span>·</span>
-              <span>{formatDate(post.createdAt)}</span>
-              <span>·</span>
-              <span className="flex items-center gap-1">
-                <Clock className="w-3.5 h-3.5" />
-                {mins} min read
-              </span>
-            </div>
-
-            <div className="flex items-center gap-2">
-              {isOwner && (
-                <Button asChild variant="outline" size="sm">
-                  <Link href={`/dashboard/edit/${post.id}`}>
-                    <Edit className="w-3.5 h-3.5" />
-                    Edit
-                  </Link>
-                </Button>
-              )}
-              <Button variant="ghost" size="sm" onClick={undefined}>
-                <Share2 className="w-3.5 h-3.5" />
-                Share
-              </Button>
-            </div>
+          <div className="flex items-center flex-wrap gap-3 text-sm text-navy-muted mb-5">
+            <span className="font-handwriting">{post.author.name ?? "author"}</span>
+            <span>·</span>
+            <span className="font-handwriting">{formatDate(post.createdAt)}</span>
+            <span>·</span>
+            <span className="flex items-center gap-1 font-body">
+              <Clock className="w-3.5 h-3.5" />
+              {mins} min read
+            </span>
           </div>
+
+          {/* Scrapbook details */}
+          {(post.mood || post.song || post.tinyJoy) && (
+            <div className="p-4 rounded-2xl bg-white/70 border-2 border-dashed border-aqua-200 space-y-2 mb-5">
+              {post.mood && (
+                <div className="flex items-center gap-2">
+                  <Smile className="w-3.5 h-3.5 text-aqua-400 flex-shrink-0" />
+                  <span className="font-body text-xs text-navy-muted">
+                    <span className="font-semibold text-navy">mood:</span> {post.moodEmoji} {post.mood}
+                  </span>
+                </div>
+              )}
+              {post.song && (
+                <div className="flex items-center gap-2">
+                  <Music className="w-3.5 h-3.5 text-coral-400 flex-shrink-0" />
+                  <span className="font-body text-xs text-navy-muted">
+                    <span className="font-semibold text-navy">playing:</span> {post.song}
+                    {post.songArtist && <span className="text-navy-faint"> — {post.songArtist}</span>}
+                  </span>
+                </div>
+              )}
+              {post.tinyJoy && (
+                <div className="flex items-center gap-2">
+                  <Star className="w-3.5 h-3.5 text-yellow-400 flex-shrink-0" />
+                  <span className="font-body text-xs text-navy-muted">
+                    <span className="font-semibold text-navy">tiny joy:</span> {post.tinyJoy}
+                  </span>
+                </div>
+              )}
+            </div>
+          )}
+
+          {isOwner && (
+            <Button asChild variant="outline" size="sm">
+              <Link href={`/dashboard/edit/${post.id}`}>
+                <Edit className="w-3.5 h-3.5" />
+                edit memory
+              </Link>
+            </Button>
+          )}
         </header>
 
-        {/* Cover image */}
-        {post.imageUrls?.[0] && (
-          <div className="mb-10 rounded-2xl overflow-hidden">
-            <img src={post.imageUrls[0]} alt={post.title} className="w-full object-cover max-h-[480px]" />
+        {/* Polaroid gallery */}
+        {post.imageUrls && post.imageUrls.length > 0 && (
+          <div className="flex flex-wrap gap-4 justify-center my-8">
+            {post.imageUrls.map((url, i) => {
+              const rot = ((i * 37 + 7) % 5 - 2) * 0.8;
+              return (
+                <div key={i} className="polaroid" style={{ transform: `rotate(${rot}deg)` }}>
+                  <div className="relative w-40 h-40 overflow-hidden">
+                    <Image src={url} alt={`${post.title} photo ${i + 1}`} fill className="object-cover" />
+                  </div>
+                </div>
+              );
+            })}
           </div>
         )}
 
         {/* Content */}
-        <div
-          className="prose max-w-none mb-12"
-          dangerouslySetInnerHTML={{ __html: post.content }}
-        />
+        <div className="prose max-w-none mb-10" dangerouslySetInnerHTML={{ __html: post.content }} />
 
         <Separator className="mb-8" />
 
         {/* Reactions */}
-        <Reactions
-          postId={post.id}
-          counts={reactionCounts}
-          userReactions={userReactions}
-          isLoggedIn={isLoggedIn}
-        />
+        <Reactions postId={post.id} counts={reactionCounts} userReactions={userReactions} isLoggedIn={isLoggedIn} />
 
         <Separator className="my-8" />
 
-        {/* Author card */}
-        <div className="flex items-start gap-4 p-6 rounded-xl bg-blue-50 border border-blue-100 mb-10">
-          <div className="w-12 h-12 rounded-full bg-blue-200 flex items-center justify-center text-blue-700 font-semibold text-lg flex-shrink-0">
+        {/* Author */}
+        <div className="flex items-start gap-4 p-5 rounded-2xl bg-aqua-50 border-2 border-dashed border-aqua-200 mb-10">
+          <div className="w-12 h-12 rounded-full bg-aqua-200 flex items-center justify-center text-navy font-heading text-lg flex-shrink-0">
             {(post.author.name ?? "A")[0].toUpperCase()}
           </div>
           <div>
-            <p className="font-semibold text-ink mb-1">{post.author.name ?? "Author"}</p>
-            {post.author.bio && <p className="text-sm text-slate-500 leading-relaxed">{post.author.bio}</p>}
+            <p className="font-heading text-base text-navy mb-1">{post.author.name ?? "author"}</p>
+            {post.author.bio && <p className="font-body text-sm text-navy-muted leading-relaxed">{post.author.bio}</p>}
           </div>
         </div>
 

@@ -15,10 +15,10 @@ export function DeletePostButton({ postId, postTitle }: { postId: string; postTi
     startTransition(async () => {
       try {
         await deletePost(postId);
-        toast.success("Post deleted");
+        toast.success("memory removed ✦");
         setOpen(false);
       } catch (err: unknown) {
-        if (err instanceof Error && err.message !== "NEXT_REDIRECT") toast.error("Could not delete");
+        if (err instanceof Error && err.message !== "NEXT_REDIRECT") toast.error("couldn't delete");
       }
     });
   };
@@ -26,20 +26,20 @@ export function DeletePostButton({ postId, postTitle }: { postId: string; postTi
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button variant="ghost" size="icon"><Trash2 className="w-4 h-4 text-red-400" /></Button>
+        <Button variant="ghost" size="icon"><Trash2 className="w-4 h-4 text-coral-400" /></Button>
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Delete post?</DialogTitle>
-          <DialogDescription>
-            Are you sure you want to delete <strong>"{postTitle}"</strong>? This cannot be undone.
+          <DialogTitle className="font-heading text-navy">delete this memory? 🌊</DialogTitle>
+          <DialogDescription className="font-body text-navy-muted">
+            Are you sure you want to delete <strong>"{postTitle}"</strong>? This can&apos;t be undone.
           </DialogDescription>
         </DialogHeader>
         <DialogFooter className="gap-2">
-          <Button variant="outline" onClick={() => setOpen(false)} disabled={isPending}>Cancel</Button>
+          <Button variant="outline" onClick={() => setOpen(false)} disabled={isPending}>keep it</Button>
           <Button variant="destructive" onClick={handleDelete} disabled={isPending}>
             {isPending ? <Loader2 className="w-4 h-4 animate-spin" /> : <Trash2 className="w-4 h-4" />}
-            {isPending ? "Deleting…" : "Delete"}
+            {isPending ? "deleting..." : "yes, delete"}
           </Button>
         </DialogFooter>
       </DialogContent>

@@ -6,16 +6,14 @@ import { ToastProvider } from "@/components/ui/toast";
 import { auth } from "@/auth";
 
 export const metadata: Metadata = {
-  title: { default: "Bako", template: "%s · Bako" },
-  description: "A thoughtful personal blog — ideas, stories, and reflections.",
-  keywords: ["blog", "writing", "journal", "personal"],
+  title: { default: "Coastal Journal ✦", template: "%s · Coastal Journal" },
+  description: "A personal digital scrapbook — memories, thoughts, and little joys by the sea.",
+  keywords: ["blog", "journal", "scrapbook", "personal", "coastal"],
   openGraph: {
     type: "website",
-    locale: "en_US",
-    url: process.env.NEXTAUTH_URL ?? "https://bako.vercel.app",
-    siteName: "Bako",
-    title: "Bako",
-    description: "A thoughtful personal blog — ideas, stories, and reflections.",
+    siteName: "Coastal Journal",
+    title: "Coastal Journal ✦",
+    description: "A personal digital scrapbook — memories, thoughts, and little joys by the sea.",
   },
 };
 
@@ -28,20 +26,21 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link
-          href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=Inter:wght@300;400;500;600;700&display=swap"
+          href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;500;600;700&family=Quicksand:wght@300;400;500;600;700&family=Pacifico&display=swap"
           rel="stylesheet"
         />
       </head>
-      <body className="min-h-screen bg-[#F8FAFC] text-ink antialiased">
+      <body className="min-h-screen bg-aqua-100 text-navy antialiased">
         <SessionProvider session={session}>
           <Navbar />
           <main className="min-h-[calc(100vh-4rem)]">{children}</main>
 
-          <footer className="border-t border-slate-200 bg-white py-10 mt-20">
+          {/* Footer */}
+          <footer className="mt-20 py-10 border-t border-dashed border-aqua-300 bg-white/50">
             <div className="container mx-auto px-4 text-center">
-              <p className="font-serif text-lg text-blue-600 mb-1">Bako</p>
-              <p className="text-sm text-slate-400">
-                A place for thoughts worth keeping · {new Date().getFullYear()}
+              <p className="font-heading text-2xl text-coral-400 mb-1">xoxo ✦</p>
+              <p className="font-body text-sm text-navy-muted">
+                made with love & sea breeze · {new Date().getFullYear()}
               </p>
             </div>
           </footer>

@@ -9,15 +9,15 @@ export function ToastProvider() {
         duration: 3000,
         style: {
           background: "#ffffff",
-          border: "1px solid #e2e8f0",
-          borderRadius: "10px",
-          color: "#1a202c",
-          fontFamily: "var(--font-inter)",
+          border: "2px solid #a0e7e5",
+          borderRadius: "16px",
+          color: "#1E3A5F",
+          fontFamily: "var(--font-quicksand)",
           fontSize: "14px",
-          boxShadow: "0 4px 12px rgba(0,0,0,0.08)",
+          boxShadow: "0 4px 16px rgba(160,231,229,0.3)",
         },
-        success: { iconTheme: { primary: "#2563eb", secondary: "#fff" } },
-        error:   { iconTheme: { primary: "#ef4444", secondary: "#fff" } },
+        success: { iconTheme: { primary: "#a0e7e5", secondary: "#1E3A5F" } },
+        error:   { iconTheme: { primary: "#ffaaa5", secondary: "#fff" } },
       }}
     />
   );

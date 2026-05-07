@@ -21,25 +21,25 @@ export function ProfileForm({ user }: { user: { name: string | null; bio: string
     fd.append("bio", bio);
     startTransition(async () => {
       const res = await updateProfile(fd);
-      if (res?.success) toast.success("Profile updated");
+      if (res?.success) toast.success("profile updated ✦");
     });
   };
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
-      <h3 className="font-medium text-ink">Edit profile</h3>
+      <h3 className="font-heading text-base text-navy">edit profile ✦</h3>
       <div className="space-y-1.5">
-        <Label htmlFor="name">Display name</Label>
-        <Input id="name" value={name} onChange={(e) => setName(e.target.value)} placeholder="Your name" maxLength={50} />
+        <Label htmlFor="name">display name</Label>
+        <Input id="name" value={name} onChange={(e) => setName(e.target.value)} placeholder="your name" maxLength={50} />
       </div>
       <div className="space-y-1.5">
-        <Label htmlFor="bio">Bio</Label>
-        <Textarea id="bio" value={bio} onChange={(e) => setBio(e.target.value)} placeholder="A little about you…" maxLength={200} rows={3} />
-        <p className="text-xs text-slate-400 text-right">{bio.length}/200</p>
+        <Label htmlFor="bio">bio</Label>
+        <Textarea id="bio" value={bio} onChange={(e) => setBio(e.target.value)} placeholder="a little about you... 🌊" maxLength={200} rows={3} />
+        <p className="font-body text-xs text-navy-faint text-right">{bio.length}/200</p>
       </div>
-      <Button type="submit" disabled={isPending}>
+      <Button type="submit" disabled={isPending} variant="coral">
         {isPending ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
-        {isPending ? "Saving…" : "Save changes"}
+        {isPending ? "saving..." : "save changes"}
       </Button>
     </form>
   );

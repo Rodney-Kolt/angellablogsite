@@ -6,7 +6,7 @@ import { ArrowLeft } from "lucide-react";
 import Link from "next/link";
 import type { Metadata } from "next";
 
-export const metadata: Metadata = { title: "New post" };
+export const metadata: Metadata = { title: "New memory ✦" };
 
 export default async function NewPostPage() {
   const session = await auth();
@@ -16,11 +16,15 @@ export default async function NewPostPage() {
 
   return (
     <div className="container mx-auto px-4 py-10 max-w-3xl">
-      <Link href="/dashboard" className="inline-flex items-center gap-1.5 text-sm text-slate-400 hover:text-blue-600 transition-colors mb-8 group">
+      <Link href="/dashboard" className="inline-flex items-center gap-1.5 font-body text-sm text-navy-muted hover:text-coral-400 transition-colors mb-8 group">
         <ArrowLeft className="w-4 h-4 group-hover:-translate-x-0.5 transition-transform" />
-        Dashboard
+        back to dashboard
       </Link>
-      <PostForm />
+      <div className="bg-white/80 rounded-2xl border-2 border-dashed border-aqua-200 shadow-polaroid p-8">
+        <h1 className="font-heading text-3xl text-navy mb-2">new memory ✦</h1>
+        <p className="font-body text-sm text-navy-muted mb-8">what do you want to remember today? 🌊</p>
+        <PostForm />
+      </div>
     </div>
   );
 }

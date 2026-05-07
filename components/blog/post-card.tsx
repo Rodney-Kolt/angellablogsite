@@ -1,9 +1,25 @@
 import Link from "next/link";
+import Image from "next/image";
 import { Post, User } from "@prisma/client";
 import { formatDate } from "@/lib/utils";
 import { Lock } from "lucide-react";
 
 type PostWithAuthor = Post & { author: Pick<User, "name" | "image"> };
+
+// Deterministic rotation from post id
+function getRotation(id: string): string {
+  const n = id.charCodeAt(0) + id.charCodeAt(id.length - 1);
+  const deg = ((n % 5) - 2) * 0.6; // -1.2 to 1.2 deg
+  return `rotate(${deg}deg)`;
+}
+
+const MOOD_COLORS: Record<string, string> = {
+  "🌊": "bg-sky-light",
+  "☀️": "bg-yellow-50",
+  "🌸": "bg-pink-50",
+  "🌿": "bg-green-50",
+  "🌙": "bg-indigo-50",
+};
 
 interface PostCardProps {
   post: PostWithAuthor;
@@ -12,46 +28,61 @@ interface PostCardProps {
 
 export function PostCard({ post }: PostCardProps) {
   const coverImage = post.imageUrls?.[0];
+  const rotation = getRotation(post.id);
+  const moodBg = post.moodEmoji ? (MOOD_COLORS[post.moodEmoji] ?? "bg-aqua-50") : "bg-aqua-50";
 
   return (
     <Link href={`/posts/${post.slug}`} className="group block">
-      <article className="rounded-xl border border-slate-200 bg-white overflow-hidden shadow-card hover:shadow-card-hover transition-all duration-200 hover:-translate-y-0.5 h-full flex flex-col">
-        {coverImage && (
-          <div className="relative h-44 overflow-hidden flex-shrink-0">
-            <img
+      <div
+        className="polaroid overflow-hidden transition-all duration-300 group-hover:shadow-polaroid-hover"
+        style={{ transform: rotation }}
+      >
+        {/* Image area */}
+        {coverImage ? (
+          <div className="relative h-44 overflow-hidden mb-3">
+            <Image
               src={coverImage}
               alt={post.title}
-              className="w-full h-full object-cover group-hover:scale-[1.03] transition-transform duration-500"
+              fill
+              className="object-cover group-hover:scale-105 transition-transform duration-500"
+              loading="lazy"
             />
+          </div>
+        ) : (
+          <div className={`h-32 ${moodBg} flex items-center justify-center mb-3 rounded-sm`}>
+            <span className="text-4xl">{post.moodEmoji ?? "🌊"}</span>
           </div>
         )}
 
-        <div className="p-5 flex flex-col flex-1">
-          {/* Tags */}
+        {/* Polaroid caption area */}
+        <div className="px-1 pb-1">
           {post.isDiaryLock && (
-            <div className="flex items-center gap-1 text-xs text-blue-500 mb-2">
+            <div className="flex items-center gap-1 text-xs text-aqua-500 mb-1">
               <Lock className="w-3 h-3" />
-              <span>Members only</span>
+              <span className="font-body">members only</span>
             </div>
           )}
 
-          <h3 className="font-serif text-lg font-semibold text-ink group-hover:text-blue-700 transition-colors mb-2 leading-snug line-clamp-2">
+          <h3 className="font-heading text-lg text-navy group-hover:text-coral-500 transition-colors leading-snug line-clamp-2 mb-1">
             {post.title}
           </h3>
 
           {post.excerpt && (
-            <p className="text-sm text-slate-500 leading-relaxed line-clamp-2 mb-4 flex-1">
+            <p className="font-body text-xs text-navy-muted line-clamp-2 mb-2 leading-relaxed">
               {post.excerpt}
             </p>
           )}
 
-          <div className="flex items-center gap-2 text-xs text-slate-400 mt-auto pt-3 border-t border-slate-100">
-            <span>{post.author.name ?? "Author"}</span>
-            <span>·</span>
-            <span>{formatDate(post.createdAt)}</span>
+          <div className="flex items-center justify-between">
+            <p className="font-handwriting text-xs text-aqua-500">
+              {formatDate(post.createdAt)}
+            </p>
+            {post.mood && (
+              <span className="font-body text-xs text-navy-faint">{post.mood}</span>
+            )}
           </div>
         </div>
-      </article>
+      </div>
     </Link>
   );
 }
