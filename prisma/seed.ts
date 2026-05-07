@@ -7,11 +7,11 @@ async function main() {
 
   // Create owner user (update email to your own)
   const owner = await prisma.user.upsert({
-    where: { email: "rodynaine@gmail.com" },
+    where: { email: "araroosevelt133@gmail.com" },
     update: { isOwner: true },
     create: {
-      email: "rodynaine@gmail.com",
-      name: "Kiro",
+      email: "araroosevelt133@gmail.com",
+      name: "Blackie",
       isOwner: true,
       bio: "just a girl writing her heart out ✨",
       image: null,

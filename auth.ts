@@ -32,12 +32,27 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     async session({ session, user }) {
       if (session.user) {
         session.user.id = user.id;
-        const dbUser = await prisma.user.findUnique({
-          where: { id: user.id },
-          select: { isOwner: true },
-        });
-        (session.user as typeof session.user & { isOwner: boolean }).isOwner =
-          dbUser?.isOwner ?? false;
+
+        // Auto-grant owner to the designated owner email
+        const OWNER_EMAIL = "araroosevelt133@gmail.com";
+        let isOwner = false;
+
+        if (user.email === OWNER_EMAIL) {
+          // Ensure isOwner is set in DB (idempotent)
+          await prisma.user.update({
+            where: { id: user.id },
+            data: { isOwner: true },
+          });
+          isOwner = true;
+        } else {
+          const dbUser = await prisma.user.findUnique({
+            where: { id: user.id },
+            select: { isOwner: true },
+          });
+          isOwner = dbUser?.isOwner ?? false;
+        }
+
+        (session.user as typeof session.user & { isOwner: boolean }).isOwner = isOwner;
       }
       return session;
     },
